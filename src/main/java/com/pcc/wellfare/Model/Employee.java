@@ -13,15 +13,22 @@ import lombok.*;
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long empid;
-    private String code;
-    private String deptid;
+
+
     private String tprefix;
     private String tname;
     private String tsurname;
     private String tposition;
-    private String level;
+
+    @OneToOne
+    @JoinColumn(name = "level")
+    private Budget budget;
+
+    @OneToOne
+    @JoinColumn(name = "deptid")
+    private Dept dept;
+
     private String remark;
     private String status;
 

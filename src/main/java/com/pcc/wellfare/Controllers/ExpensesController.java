@@ -1,7 +1,6 @@
 package com.pcc.wellfare.controllers;
 
 
-import com.pcc.wellfare.model.Budget;
 import com.pcc.wellfare.repository.BudgetRepository;
 import com.pcc.wellfare.repository.ExpensesRepository;
 import com.pcc.wellfare.response.ApiResponse;
@@ -9,8 +8,6 @@ import com.pcc.wellfare.response.ResponseData;
 import com.pcc.wellfare.service.ExpensesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

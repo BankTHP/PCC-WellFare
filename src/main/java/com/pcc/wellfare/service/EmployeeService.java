@@ -1,9 +1,13 @@
 package com.pcc.wellfare.service;
 
+import com.pcc.wellfare.model.Budget;
+import com.pcc.wellfare.model.Dept;
+import com.pcc.wellfare.repository.BudgetRepository;
+//import com.pcc.wellfare.repository.DeptRepository;
+import com.pcc.wellfare.repository.DeptRepository;
 import com.pcc.wellfare.requests.CreateEmployeeRequest;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +22,8 @@ import com.pcc.wellfare.model.Employee;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final BudgetRepository budgetRepository;
+    private final DeptRepository deptRepository;
     private EntityManager entityManager;
 
     @Transactional
@@ -31,8 +37,10 @@ public class EmployeeService {
         entityManager.persist(employee);
     }
 
-    public EmployeeService(EmployeeRepository employeeRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository, BudgetRepository budgetRepository, DeptRepository deptRepository) {
         this.employeeRepository = employeeRepository;
+        this.budgetRepository = budgetRepository;
+        this.deptRepository = deptRepository;
     }
 
     public List<Employee> getAllEmployees() {
@@ -44,23 +52,27 @@ public class EmployeeService {
     }
 
 
-    public String createEmployee(CreateEmployeeRequest createEmployeeRequest) {
+    public Employee createEmployee(CreateEmployeeRequest createEmployeeRequest) {
+        System.out.println(createEmployeeRequest.getLevel());
+        Optional<Budget> budgetOptional = budgetRepository.findByLevel(createEmployeeRequest.getLevel());
+        Budget budget = budgetOptional.orElseThrow(() -> new RuntimeException("Budget not found"));
+        Optional<Dept> deptOptional = deptRepository.findByCode(createEmployeeRequest.getCode());
+        Dept dept = deptOptional.orElseThrow(() -> new RuntimeException("Dept not found"));
         Employee employee = Employee
                 .builder()
                 .empid(createEmployeeRequest.getEmpId())
-                .code(createEmployeeRequest.getCode())
-                .deptid(createEmployeeRequest.getDeptId())
+                .dept(dept)
                 .tprefix(createEmployeeRequest.getTPrefix())
                 .email(createEmployeeRequest.getEmail())
                 .tname(createEmployeeRequest.getTName())
                 .tsurname(createEmployeeRequest.getTSurname())
                 .tposition(createEmployeeRequest.getTPosition())
-                .level(createEmployeeRequest.getLevel())
+                .budget(budget)
                 .remark(createEmployeeRequest.getRemark())
                 .status(createEmployeeRequest.getStatus())
                 .build();
 
-        return createEmployeeRequest.getEmail();
+        return employeeRepository.save(employee);
     }
 
 //    @Transactional

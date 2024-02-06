@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/budget")
@@ -95,7 +96,7 @@ public class BudgetController {
         ApiResponse response = new ApiResponse();
         ResponseData data = new ResponseData();
         try {
-            List<Budget> budgets = budgetRepository.findByLevel(level);
+            Optional<Budget> budgets = budgetRepository.findByLevel(level);
             data.setResult(budgets);
             response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
             response.setResponseData(data);

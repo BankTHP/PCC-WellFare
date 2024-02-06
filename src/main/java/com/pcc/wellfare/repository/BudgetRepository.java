@@ -5,10 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
-    List<Budget> findByLevel(String level);
+    Optional<Budget> findByLevel(String level);
 
     @Query(value = "select opd,ipd from budget b where \"level\" = (select \"level\"  " +
             "from employee e where e.empId = CAST(?1 AS bigint))", nativeQuery = true)
