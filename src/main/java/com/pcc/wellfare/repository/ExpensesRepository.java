@@ -15,5 +15,6 @@ public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
             "WHERE e.empId = CAST(?1 AS bigint) AND EXTRACT(YEAR FROM e.date_of_admission) = EXTRACT(YEAR FROM CURRENT_DATE) " +
             "GROUP BY e.empId", nativeQuery = true)
     List<Object[]> getUse(Long empId);
-
+    
+    List<Expenses> findByDateOfAdmissionIsNotNull();
 }

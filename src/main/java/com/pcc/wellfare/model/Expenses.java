@@ -1,9 +1,5 @@
 package com.pcc.wellfare.model;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
@@ -18,10 +14,14 @@ import java.util.Date;
 public class Expenses {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id") // ระบุชื่อคอลัมน์เพื่อให้ตรงกับฐานข้อมู]
     private Long id;
 
     //เชื่อมกับ employee
-    private Long empid;
+    @ManyToOne
+    @JoinColumn(name = "empid")
+    private Employee employee;
+
 
     private Date dateOfAdmission;
     private String description;
