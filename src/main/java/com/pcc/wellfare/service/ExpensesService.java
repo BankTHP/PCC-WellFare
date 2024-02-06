@@ -1,5 +1,6 @@
 package com.pcc.wellfare.service;
 
+import com.pcc.wellfare.model.Expenses;
 import com.pcc.wellfare.repository.BudgetRepository;
 import com.pcc.wellfare.repository.ExpensesRepository;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,10 @@ public class ExpensesService {
     public ExpensesService(ExpensesRepository expensesRepository, BudgetRepository budgetRepository) {
         this.expensesRepository = expensesRepository;
         this.budgetRepository = budgetRepository;
+    }
+    
+    public List<Expenses> findAllExpensesWithDateOfAdmissionNotNull() {
+        return expensesRepository.findByDateOfAdmissionIsNotNull();
     }
 
     private double parseDoubleWithComma(String value) {
