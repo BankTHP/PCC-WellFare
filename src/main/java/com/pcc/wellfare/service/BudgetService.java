@@ -2,17 +2,11 @@ package com.pcc.wellfare.service;
 
 
 import com.pcc.wellfare.model.Budget;
-import com.pcc.wellfare.model.Employee;
 import com.pcc.wellfare.repository.BudgetRepository;
-import com.pcc.wellfare.repository.EmployeeRepository;
 import com.pcc.wellfare.requests.CreateBudgetRequest;
-import com.pcc.wellfare.requests.CreateEmployeeRequest;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service

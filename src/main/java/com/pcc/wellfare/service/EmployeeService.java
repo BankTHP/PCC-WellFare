@@ -43,44 +43,43 @@ public class EmployeeService {
         return employeeRepository.findById(empId);
     }
 
-    // public Employee createEmployee(Employee employee) {
-    // return employeeRepository.save(employee);
-    // }
 
-    @Transactional
-    public Employee createEmployee(CreateEmployeeRequest createEmployeeRequest) {
-        Employee employee = Employee.builder()
-                // .empid(createEmployeeRequest.getEmpid()) // ไม่ได้ตั้งค่า empid ใน Builder
+    public String createEmployee(CreateEmployeeRequest createEmployeeRequest) {
+        Employee employee = Employee
+                .builder()
+                .empid(createEmployeeRequest.getEmpId())
                 .code(createEmployeeRequest.getCode())
-                .deptid(createEmployeeRequest.getDeptid())
-                .tprefix(createEmployeeRequest.getTprefix())
-                .tname(createEmployeeRequest.getTname())
-                .tsurname(createEmployeeRequest.getTsurname())
-                .tposition(createEmployeeRequest.getTposition())
+                .deptid(createEmployeeRequest.getDeptId())
+                .tprefix(createEmployeeRequest.getTPrefix())
+                .email(createEmployeeRequest.getEmail())
+                .tname(createEmployeeRequest.getTName())
+                .tsurname(createEmployeeRequest.getTSurname())
+                .tposition(createEmployeeRequest.getTPosition())
                 .level(createEmployeeRequest.getLevel())
                 .remark(createEmployeeRequest.getRemark())
                 .status(createEmployeeRequest.getStatus())
                 .build();
-        return employeeRepository.save(employee);
+
+        return createEmployeeRequest.getEmail();
     }
 
-    @Transactional
-    public Employee updateEmployee(Long empid, CreateEmployeeRequest createEmployeeRequest) {
-        Employee employee = employeeRepository.findById(empid)
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + empid));
-
-        employee.setCode(createEmployeeRequest.getCode());
-        employee.setDeptid(createEmployeeRequest.getDeptid());
-        employee.setTprefix(createEmployeeRequest.getTprefix());
-        employee.setTname(createEmployeeRequest.getTname());
-        employee.setTsurname(createEmployeeRequest.getTsurname());
-        employee.setTposition(createEmployeeRequest.getTposition());
-        employee.setLevel(createEmployeeRequest.getLevel());
-        employee.setRemark(createEmployeeRequest.getRemark());
-        employee.setStatus(createEmployeeRequest.getStatus());
-
-        return employeeRepository.save(employee);
-    }
+//    @Transactional
+//    public Employee updateEmployee(Long empid, CreateEmployeeRequest createEmployeeRequest) {
+//        Employee employee = employeeRepository.findById(empid)
+//                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + empid));
+//
+//        employee.setCode(createEmployeeRequest.getCode());
+//        employee.setDeptid(createEmployeeRequest.getDeptid());
+//        employee.setTprefix(createEmployeeRequest.getTprefix());
+//        employee.setTname(createEmployeeRequest.getTname());
+//        employee.setTsurname(createEmployeeRequest.getTsurname());
+//        employee.setTposition(createEmployeeRequest.getTposition());
+//        employee.setLevel(createEmployeeRequest.getLevel());
+//        employee.setRemark(createEmployeeRequest.getRemark());
+//        employee.setStatus(createEmployeeRequest.getStatus());
+//
+//        return employeeRepository.save(employee);
+//    }
     ///////////////////////////////////////////////////////////////////////////////////
     // public Employee create(CreateEmployeeRequest createEmployeeRequest) {
     // if (createEmployeeRequest == null) {
@@ -108,13 +107,13 @@ public class EmployeeService {
     // }
     // }
 
-    public boolean isUserNull(CreateEmployeeRequest request) {
-        return (request == null ||
-                request.getTname() == null ||
-                request.getTname().isEmpty() ||
-                request.getTsurname() == null ||
-                request.getTsurname().isEmpty());
-    }
+//    public boolean isUserNull(CreateEmployeeRequest request) {
+//        return (request == null ||
+//                request.getTname() == null ||
+//                request.getTname().isEmpty() ||
+//                request.getTsurname() == null ||
+//                request.getTsurname().isEmpty());
+//    }
 
     public void deleteEmployee(Long empId) {
         employeeRepository.deleteById(empId);

@@ -7,14 +7,15 @@ import lombok.Data;
 @Data
 public class CreateEmployeeRequest {
 
-    Long empid;
+    Long empId;
     String code;
-    String deptid;
-    String tprefix;
-    String tname;
-    String tsurname;
-    String tposition;
+    String deptId;
+    String tPrefix;
+    String tName;
+    String tSurname;
+    String tPosition;
     String level;
     String remark;
     String status;
+    String email;
 }

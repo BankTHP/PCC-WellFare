@@ -14,8 +14,12 @@ public class Budget {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     Long id;
+
+    //เชื่อมกับ employee
     String level;
+
     String opd;
     String ipd;
 

@@ -3,18 +3,18 @@ package com.pcc.wellfare.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "employee")
 @Data
 @Builder
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Getter
+@Setter
 public class Employee {
 
     @Id
-    private Long empid; // ไม่มี @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long empid;
     private String code;
     private String deptid;
     private String tprefix;
@@ -24,6 +24,9 @@ public class Employee {
     private String level;
     private String remark;
     private String status;
+
+    @Column(name = "e-mail")
+    private String email;
 }
 // @Column(name = "e-mail")
 // private String email;
