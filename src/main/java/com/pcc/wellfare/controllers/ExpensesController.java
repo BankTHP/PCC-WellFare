@@ -2,11 +2,14 @@ package com.pcc.wellfare.controllers;
 
 
 import com.pcc.wellfare.model.Budget;
+import com.pcc.wellfare.model.Expenses;
 import com.pcc.wellfare.repository.BudgetRepository;
 import com.pcc.wellfare.repository.ExpensesRepository;
 import com.pcc.wellfare.response.ApiResponse;
 import com.pcc.wellfare.response.ResponseData;
 import com.pcc.wellfare.service.ExpensesService;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +36,11 @@ public class ExpensesController {
         return "Hello world2";
     }
 
-
+    @GetMapping(value = "/getAllExpenseInUsed")
+    public ResponseEntity<List<Expenses>> getAllExpenseInUsed() {
+    	List<Expenses> allExpense = expensesService.findAllExpensesWithDateOfAdmissionNotNull();
+    	return new ResponseEntity<>(allExpense, HttpStatus.OK);
+    }
 
     @GetMapping(value = "/getTotal")
     public ResponseEntity<ApiResponse> getTotal(Long empId) {
