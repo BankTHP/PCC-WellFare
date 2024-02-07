@@ -3,6 +3,8 @@ package com.pcc.wellfare.service;
 import com.pcc.wellfare.model.Expenses;
 import com.pcc.wellfare.repository.BudgetRepository;
 import com.pcc.wellfare.repository.ExpensesRepository;
+import com.pcc.wellfare.requests.TestCreateExpensesRequest;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,6 +16,26 @@ public class ExpensesService {
     private final ExpensesRepository expensesRepository;
     private final BudgetRepository budgetRepository;
 
+
+    //   public Expenses create(TestCreateExpensesRequest testcreateExpensesRequest) {
+
+    //     Expenses expenses = Expenses
+    //             .builder()  
+    //             .opd(testcreateExpensesRequest.getOpd())
+    //             .ipd(testcreateExpensesRequest.getIpd())
+    //             .empid(testcreateExpensesRequest.getEmpid())
+    //             .remark(testcreateExpensesRequest.getRemark())
+    //             .description(testcreateExpensesRequest.getDescription())
+    //             .build();
+
+    //     return expensesRepository.save(expenses);
+    // }
+
+
+    public List<Expenses> getExpensesById(Long empId) {         
+        return expensesRepository.findByEmpid(empId);     
+    }      
+    
     public ExpensesService(ExpensesRepository expensesRepository, BudgetRepository budgetRepository) {
         this.expensesRepository = expensesRepository;
         this.budgetRepository = budgetRepository;
