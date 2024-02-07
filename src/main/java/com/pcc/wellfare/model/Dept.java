@@ -1,6 +1,8 @@
 
 package com.pcc.wellfare.model;
 
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,17 +18,20 @@ public class Dept {
     @Id
     private String code;
 
+    
+    private String deptid;
     // @OneToOne
     // @JoinColumn(name = "employee")
-    private String deptid;
-
     private String company;
     private String edivision;
     private String tdivision;
-    private String divionid;
+    private String divisionid;
     private String edept;
     private String tdept;
     private String deptcode;
 
     private String remark;
+    
+    @OneToMany(mappedBy = "dept")
+    private Set<Employee> employees;
 }

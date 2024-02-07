@@ -1,5 +1,10 @@
 package com.pcc.wellfare.service;
 
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.HeaderColumnNameMappingStrategy;
+import com.pcc.wellfare.CSVRepresentation.DeptCsvRepresentation;
+import com.pcc.wellfare.CSVRepresentation.EmployeeCsvRepresentation;
 import com.pcc.wellfare.model.Budget;
 import com.pcc.wellfare.model.Dept;
 import com.pcc.wellfare.repository.BudgetRepository;
@@ -9,11 +14,22 @@ import com.pcc.wellfare.requests.CreateEmployeeRequest;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.pcc.wellfare.repository.EmployeeRepository;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.pcc.wellfare.model.Employee;
 
@@ -130,4 +146,46 @@ public class EmployeeService {
     public void deleteEmployee(Long empId) {
         employeeRepository.deleteById(empId);
     }
+    
+    public Integer uploadEmps(MultipartFile file) throws IOException {
+        Set<Employee> Emps = parseCsv(file);
+        employeeRepository.saveAll(Emps);
+        return Emps.size();
+    }
+
+    private Set<Employee> parseCsv(MultipartFile file) throws IOException {
+        try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            HeaderColumnNameMappingStrategy<EmployeeCsvRepresentation> strategy =
+                    new HeaderColumnNameMappingStrategy<>();
+            strategy.setType(EmployeeCsvRepresentation.class);
+            CsvToBean<EmployeeCsvRepresentation> csvToBean =
+                    new CsvToBeanBuilder<EmployeeCsvRepresentation>(reader)
+                            .withMappingStrategy(strategy)
+                            .withIgnoreEmptyLine(true)
+                            .withIgnoreLeadingWhiteSpace(true)
+                            .build();
+            return csvToBean.parse().stream()
+                    .map(csvLine -> {
+                        Budget budget = budgetRepository.findByLevel(csvLine.getLevel()).orElse(null);
+                        Dept dept = deptRepository.findById(csvLine.getCode()).orElse(null);
+
+                        return Employee.builder()
+                                .empid(csvLine.getEmpid())
+                                .tprefix(csvLine.getTprefix())
+                                .tname(csvLine.getTname())
+                                .tsurname(csvLine.getTsurname())
+                                .tposition(csvLine.getTposition())
+                                .budget(budget)
+                                .dept(dept)
+                                .status(csvLine.getStatus())
+                                .remark(csvLine.getRemark())
+                                .email(csvLine.getEmail())
+                                .build();
+                    })
+                    .collect(Collectors.toSet());
+        }
+    }
+
+
+
 }

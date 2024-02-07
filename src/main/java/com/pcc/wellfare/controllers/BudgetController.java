@@ -9,7 +9,9 @@ import com.pcc.wellfare.response.ResponseData;
 import com.pcc.wellfare.service.BudgetService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,5 +107,12 @@ public class BudgetController {
             response.setResponseMessage(e.getMessage());
             return ResponseEntity.internalServerError().body(response);
         }
+    }
+    
+    @PostMapping(value = "/uploadBudgets", consumes = {"multipart/form-data"})
+    public ResponseEntity<Integer> uploadBudgets(
+            @RequestPart("file")MultipartFile file
+            ) throws IOException {
+        return ResponseEntity.ok(budgetService.uploadBudget(file));
     }
 }

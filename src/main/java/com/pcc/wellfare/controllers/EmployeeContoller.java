@@ -6,8 +6,12 @@ import com.pcc.wellfare.requests.CreateEmployeeRequest;
 import com.pcc.wellfare.response.ApiResponse;
 import com.pcc.wellfare.response.ResponseData;
 import com.pcc.wellfare.service.EmployeeService;
+
+import java.io.IOException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(value = "/employee")
@@ -37,6 +41,12 @@ public class EmployeeContoller {
             return ResponseEntity.internalServerError().body(response);
         }
     }
-
+    
+    @PostMapping(value = "/uploadEmps", consumes = {"multipart/form-data"})
+    public ResponseEntity<Integer> uploadEmps(
+            @RequestPart ("file")MultipartFile file
+            ) throws IOException {
+        return ResponseEntity.ok(employeeService.uploadEmps(file));
+    }
 
 }

@@ -1,5 +1,7 @@
 package com.pcc.wellfare.model;
 
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,15 +14,18 @@ import lombok.*;
 @Setter
 public class Budget {
 
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    Long id;
-    String level;
-
-    String opd;
-    String ipd;
+    private String level;
+    private String opd;
+    private String ipd;
 
     @Column(name = "ค่าห้อง_ค่าอาหาร")
-    String room;
+    private String room;
+    
+    @OneToMany(mappedBy = "budget")
+    private Set<Employee> employees;
+
 }

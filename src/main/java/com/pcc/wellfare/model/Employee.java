@@ -12,21 +12,20 @@ import lombok.*;
 @Setter
 public class Employee {
 
-    @Id
+	@Id
     private Long empid;
-
 
     private String tprefix;
     private String tname;
     private String tsurname;
     private String tposition;
 
-    @OneToOne
-    @JoinColumn(name = "level")
+    @ManyToOne
+    @JoinColumn(name = "budget_id")
     private Budget budget;
 
-    @OneToOne
-    @JoinColumn(name = "deptid")
+    @ManyToOne
+    @JoinColumn(name = "dept_code")
     private Dept dept;
 
     private String remark;
