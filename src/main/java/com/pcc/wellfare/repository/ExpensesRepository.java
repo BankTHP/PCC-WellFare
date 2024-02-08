@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
@@ -18,9 +19,19 @@ public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
             "GROUP BY e.empId", nativeQuery = true)
     List<Object[]> getUse(Long empId);
 
-    //Optional<Expenses> findByEmpid(Long empid);
 
-    List<Expenses> findByEmpid(Long empid);
+    @Query(value = "SELECT SUM(opd) AS total_opd " +
+            "FROM Expenses e " +
+            "WHERE e.empId = CAST(?1 AS bigint) AND EXTRACT(YEAR FROM e.date_of_admission) = EXTRACT(YEAR FROM CURRENT_DATE) " , nativeQuery = true)
+    Float getUseOpd(Long empId);
+
+    @Query(value = "SELECT SUM(ipd) AS total_ipd " +
+            "FROM Expenses e " +
+            "WHERE e.empId = CAST(?1 AS bigint) AND EXTRACT(YEAR FROM e.date_of_admission) = EXTRACT(YEAR FROM CURRENT_DATE) " , nativeQuery = true)
+    Float getUseIpd(Long empId);
+
+
+//    List<Expenses> findByEmpId(Long empid);
     
     List<Expenses> findByDateOfAdmissionIsNotNull();
 }
