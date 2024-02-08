@@ -24,8 +24,5 @@ public class Budget {
 
     @Column(name = "ค่าห้อง_ค่าอาหาร")
     private String room;
-    
-    @OneToMany(mappedBy = "budget")
-    private Set<Employee> employees;
 
 }

@@ -31,7 +31,4 @@ public class Dept {
     private String deptcode;
 
     private String remark;
-    
-    @OneToMany(mappedBy = "dept")
-    private Set<Employee> employees;
 }
