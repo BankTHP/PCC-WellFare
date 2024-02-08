@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/expenses")
@@ -98,9 +99,28 @@ public class ExpensesController {
         return "Hello world2";
     }
 
-    @DeleteMapping(value = "/deleteExpenses")
-    public String deleteExpenses() {
-        return "Hello world2";
+    @DeleteMapping(value = "/deleteExpenses/{expensesId}")
+    public ResponseEntity<ApiResponse> deleteExpenses(@PathVariable Long expensesId) {
+        ApiResponse response = new ApiResponse();
+        ResponseData data = new ResponseData();
+        try {
+            Optional<Expenses> expensesOptional = expensesRepository.findById(expensesId);
+    
+            if (expensesOptional.isPresent()) {
+                Expenses expenses = expensesOptional.get();
+                expensesRepository.delete(expenses);
+    
+                response.setResponseMessage("ลบข้อมูลเรียบร้อย");
+                response.setResponseData(data);
+                return ResponseEntity.ok().body(response);
+            } else {
+                response.setResponseMessage("ไม่พบข้อมูลที่ต้องการลบ");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            response.setResponseMessage("เกิดข้อผิดพลาดในระหว่างการลบข้อมูล");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
 
