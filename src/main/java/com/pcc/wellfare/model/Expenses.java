@@ -19,7 +19,7 @@ public class Expenses {
 
     //เชื่อมกับ employee
     @ManyToOne
-    @JoinColumn(name = "empid")
+    @JoinColumn(name = "userId")
     private Employee employee;
 
     @Column(name = "date_of_admission")

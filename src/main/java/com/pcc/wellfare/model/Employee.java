@@ -11,10 +11,12 @@ import lombok.*;
 @Getter
 @Setter
 public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "userId")
+    private long userId;
 
-	@Id
     private Long empid;
-
     private String tprefix;
     private String tname;
     private String tsurname;
@@ -34,5 +36,3 @@ public class Employee {
     @Column(name = "e-mail")
     private String email;
 }
-// @Column(name = "e-mail")
-// private String email;

@@ -52,9 +52,9 @@ public class ExpensesService {
         return Double.parseDouble(value);
     }
 
-    public Map<String, Double> getTotal(Long empId) {
-        List<Object[]> useBudget = expensesRepository.getUse(empId);
-        List<Object[]> canUseBudget = budgetRepository.getCanUse(empId);
+    public Map<String, Double> getTotal(Long userId) {
+        List<Object[]> useBudget = expensesRepository.getUse(userId);
+        List<Object[]> canUseBudget = budgetRepository.getCanUse(userId);
 
         if (canUseBudget.isEmpty()) {
             throw new RuntimeException("Can Use Budget is empty");
@@ -75,7 +75,7 @@ public class ExpensesService {
                 double useIpd = parseDoubleWithComma(use[1].toString());
                 double canOpd = parseDoubleWithComma(can[0].toString());
                 double canIpd = parseDoubleWithComma(can[1].toString());
-
+                
                 double totalOpd = canOpd - useOpd;
                 double totalIpd = canIpd - useIpd;
 
@@ -89,8 +89,8 @@ public class ExpensesService {
 
 
 
-    public Object getExpenses(Long empId) {
-        List<Object[]> useBudget = expensesRepository.getUse(empId);
+    public Object getExpenses(Long userId) {
+        List<Object[]> useBudget = expensesRepository.getUse(userId);
 
         if (useBudget.isEmpty()) {
             return "ยังไม่มีการเบิกในระบบ";
@@ -109,13 +109,15 @@ public class ExpensesService {
     }
 
 
-    public Object create(ExpensesRequest expensesRequest, Long empId) {
-        float perDay = budgetRepository.getPerDay(empId);
-        float opdExpenses = (expensesRepository.getUseOpd(empId) != null) ? expensesRepository.getUseOpd(empId) : 0.0f;
-        float ipdExpenses = (expensesRepository.getUseIpd(empId) != null) ? expensesRepository.getUseIpd(empId) : 0.0f;
+    public Object create(ExpensesRequest expensesRequest, Long userId) {
+        Optional<Employee> employeeOptional = employeeRepository.findById(userId);
+        Employee employee = employeeOptional.orElseThrow(() -> new RuntimeException("Employee not found"));
+        float perDay = budgetRepository.getPerDay(userId);
+        float opdExpenses = (expensesRepository.getUseOpd(userId) != null) ? expensesRepository.getUseOpd(userId) : 0.0f;
+        float ipdExpenses = (expensesRepository.getUseIpd(userId) != null) ? expensesRepository.getUseIpd(userId) : 0.0f;
 
-        float totalOpd = budgetRepository.getOpd(empId) - opdExpenses;
-        float totalIpd = budgetRepository.getIpd(empId) - ipdExpenses;
+        float totalOpd = budgetRepository.getOpd(userId) - opdExpenses;
+        float totalIpd = budgetRepository.getIpd(userId) - ipdExpenses;
 
         float withdrawOpd = expensesRequest.getOpd();
         float withdrawIpd = expensesRequest.getIpd();
@@ -133,6 +135,7 @@ public class ExpensesService {
             } else if (totalOpd >= withdrawOpd) {
                 totalOpd = totalOpd - withdrawOpd;
                 canWithdraw = withdrawOpd;
+                System.out.println("0");
                 if (totalOpd == 0) {
                     return canWithdraw;
                 } else {
@@ -140,23 +143,27 @@ public class ExpensesService {
                         if (deduct > totalOpd) {
                             canWithdraw = withdrawOpd+totalOpd;
                             totalOpd = 0;
+                            System.out.println("1");
                         } else {
                             totalOpd = totalOpd - deduct;
                             canWithdraw = withdrawOpd+deduct;
+                            System.out.println("2");
                         }
                     } else {
                         if (totalOpd - roomService < 0) {
                             canWithdraw =  canWithdraw + totalOpd;
                             totalOpd = 0;
+                            System.out.println("3");
                         } else {
                             totalOpd = totalOpd - roomService;
                             canWithdraw = withdrawOpd + roomService;
+                            System.out.println("4");
                         }
                     }
                 }
             } else {
                 canWithdraw = totalOpd;
-                totalOpd = 0;
+                System.out.println("5");
             }
         } else if (types.equals("ipd")) {
             if (totalIpd == 0) {
@@ -186,16 +193,12 @@ public class ExpensesService {
                     }
                 }
             } else {
-                System.out.println("test");
                 canWithdraw = totalIpd;
-                totalIpd = 0;
             }
 
         } else {
             System.out.println("Type ผิดเว้ย");
         }
-        Optional<Employee> employeeOptional = employeeRepository.findByEmpid(empId);
-        Employee employee = employeeOptional.orElseThrow(() -> new RuntimeException("Employee not found"));
         Expenses expenses = Expenses
                 .builder()
                 .employee(employee)

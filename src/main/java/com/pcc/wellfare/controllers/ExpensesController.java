@@ -58,11 +58,11 @@ public class ExpensesController {
     }
 
     @GetMapping(value = "/getTotal")
-    public ResponseEntity<ApiResponse> getTotal(Long empId) {
+    public ResponseEntity<ApiResponse> getTotal(Long userId) {
         ApiResponse response = new ApiResponse();
         ResponseData data = new ResponseData();
         try {
-            Object budgets = expensesService.getTotal(empId);
+            Object budgets = expensesService.getTotal(userId);
             data.setResult(budgets);
             response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
             response.setResponseData(data);
@@ -74,11 +74,11 @@ public class ExpensesController {
     }
 
     @GetMapping(value = "/getExpenses")
-    public ResponseEntity<ApiResponse> getExpenses(Long empId) {
+    public ResponseEntity<ApiResponse> getExpenses(Long userId) {
         ApiResponse response = new ApiResponse();
         ResponseData data = new ResponseData();
         try {
-            Object budgets = expensesService.getExpenses(empId);
+            Object budgets = expensesService.getExpenses(userId);
             data.setResult(budgets);
             response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
             response.setResponseData(data);
