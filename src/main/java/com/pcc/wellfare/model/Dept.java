@@ -18,10 +18,7 @@ public class Dept {
     @Id
     private String code;
 
-    
     private String deptid;
-    // @OneToOne
-    // @JoinColumn(name = "employee")
     private String company;
     private String edivision;
     private String tdivision;
