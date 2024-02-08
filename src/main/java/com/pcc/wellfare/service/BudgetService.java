@@ -65,7 +65,6 @@ public class BudgetService {
 					.build();
 			return csvToBean
 					.parse().stream().map(csvLine -> Budget.builder()
-							.id(csvLine.getId())
 							.level(csvLine.getLevel())
 							.opd(csvLine.getOpd())
 							.ipd(csvLine.getIpd())
