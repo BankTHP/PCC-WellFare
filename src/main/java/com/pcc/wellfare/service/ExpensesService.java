@@ -46,6 +46,10 @@ public class ExpensesService {
     public List<Expenses> findAllExpensesWithDateOfAdmissionNotNull() {
         return expensesRepository.findByDateOfAdmissionIsNotNull();
     }
+    
+    public Optional<Expenses> findbyid(Long id) {
+    	return expensesRepository.findById(id);
+    }
 
     private double parseDoubleWithComma(String value) {
         value = value.replaceAll(",", "");

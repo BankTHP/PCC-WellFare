@@ -8,6 +8,7 @@ import com.pcc.wellfare.response.ResponseData;
 import com.pcc.wellfare.service.EmployeeService;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,21 @@ public class EmployeeContoller {
 
     public EmployeeContoller(EmployeeService employeeService) {
         this.employeeService = employeeService;
+    }
+    @GetMapping(value = "/findAll")
+    public ResponseEntity<ApiResponse> findAllEmp() {
+    	ApiResponse response = new ApiResponse();
+    	ResponseData data = new ResponseData();
+    	try {
+			List<Employee> allEmps = employeeService.getAllEmployees();
+			data.setResult(allEmps);
+			response.setResponseData(data);
+			response.setResponseMessage("สำเร็จ");
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			response.setResponseMessage(e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+		}
     }
 
     @PostMapping(value = "/create")
