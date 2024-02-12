@@ -94,17 +94,17 @@ public class EmployeeService {
     }
 
     public Employee updateEmployee(Long userid, EditEmployeeRequest editEmployeeRequest) {
-        String email = editEmployeeRequest.getEmail();
+//        String email = editEmployeeRequest.getEmail();
 
-        if (email == null || email.isEmpty() || email.equals("")) {
-        } else {
-            if (employeeRepository.existsByEmail(email)) {
-                throw new RuntimeException("Email is already in use.");
-            }
-        }
+//        if (email == null || email.isEmpty() || email.equals("")) {
+//        } else {
+//            if (employeeRepository.existsByEmail(email)) {
+//                throw new RuntimeException("Email is already in use.");
+//            }
+//        }
         Optional<Budget> budgetOptional = budgetRepository.findByLevel(editEmployeeRequest.getLevel());
         Budget budget = budgetOptional.orElseThrow(() -> new RuntimeException("Budget not found"));
-        Optional<Dept> deptOptional = deptRepository.findByCode(editEmployeeRequest.getCode());
+        Optional<Dept> deptOptional = deptRepository.findById(editEmployeeRequest.getDeptCode());
         Dept dept = deptOptional.orElseThrow(() -> new RuntimeException("Dept not found"));
         Employee employee = employeeRepository.findById(userid)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: "
@@ -118,9 +118,20 @@ public class EmployeeService {
         employee.setTposition(editEmployeeRequest.getTPosition());
         employee.setBudget(budget);
         employee.setRemark(editEmployeeRequest.getRemark());
-        employee.setStatus(editEmployeeRequest.getStatus());
-
+        employee.setStatus(this.getStatusCode(editEmployeeRequest.getRemark()));
         return employeeRepository.save(employee);
+    }
+    
+    private String getStatusCode(String type) {
+    	if(type == "พนักงานประจำ") {
+    		return "1";
+    	}
+    	else if(type == "สัญญาจ้าง") {
+    		return "2";
+    	}
+    	else {
+    		return "3";
+    	}
     }
 
     public String deleteEmployee(Long userid) {

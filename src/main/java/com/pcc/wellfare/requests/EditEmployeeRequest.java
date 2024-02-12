@@ -16,14 +16,12 @@ import jakarta.persistence.ManyToOne;
 @Builder
 public class EditEmployeeRequest {
 
-  String code;
-  String deptId;
+  String deptCode;
   String tPrefix;
   String tName;
   String tSurname;
   String tPosition;
   String level;
   String remark;
-  String status;
   String email;
 }
