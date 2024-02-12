@@ -11,14 +11,34 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
     Optional<Budget> findByLevel(String level);
 
+
     @Query(value = "select opd,ipd from budget b where \"level\" = (select \"level\"  " +
-            "from employee e where e.empId = CAST(?1 AS bigint))", nativeQuery = true)
+            "from employee e where e.user_id = CAST(?1 AS bigint))", nativeQuery = true)
     List<Object[]> getCanUse(Long empId);
+
+
+    @Query(value = "SELECT CAST(opd AS float) FROM budget b WHERE level = (SELECT level " +
+            "FROM employee e WHERE e.user_id = CAST(?1 AS bigint)) LIMIT 1", nativeQuery = true)
+    float getOpd(Long empId);
+
+    @Query(value = "SELECT CAST(ipd AS float) FROM budget b WHERE level = (SELECT level " +
+            "FROM employee e WHERE e.user_id = CAST(?1 AS bigint)) LIMIT 1", nativeQuery = true)
+    float getIpd(Long empId);
+
+    @Query(value = "SELECT CAST(ค่าห้อง_ค่าอาหาร AS float) FROM budget b WHERE level = (SELECT level " +
+            "FROM employee e WHERE e.user_id = CAST(?1 AS bigint)) LIMIT 1", nativeQuery = true)
+    float getPerDay(Long empId);
+
+
+
+
 
 
 
     @Query(value = "select \"ค่าห้อง_ค่าอาหาร\" from budget b where \"level\" = (select \"level\"  " +
             "from employee e where e.empId = CAST(?1 AS bigint))", nativeQuery = true)
     List<Object[]> getCanUseDay(Long empId);
+
+
 
 }

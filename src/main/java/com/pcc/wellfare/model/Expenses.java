@@ -17,15 +17,9 @@ public class Expenses {
     @Column(name = "id") // ระบุชื่อคอลัมน์เพื่อให้ตรงกับฐานข้อมู]
     private Long id;
 
-    // @Column(name = "empid") 
-    // private Long empid;
-
-  @Column(name = "empid", insertable = false, updatable = false)
-  private Long empid;
-
     //เชื่อมกับ employee
     @ManyToOne
-    @JoinColumn(name = "empid")
+    @JoinColumn(name = "userId")
     private Employee employee;
 
     @Column(name = "date_of_admission")
@@ -36,4 +30,9 @@ public class Expenses {
     private double opd;
     private double ipd;
     private String remark;
+    private float roomService;
+    int days;
+    Date startDate;
+    Date endDate;
+    float canWithdraw;
 }

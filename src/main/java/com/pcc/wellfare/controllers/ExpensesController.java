@@ -6,6 +6,7 @@ import com.pcc.wellfare.model.Budget;
 import com.pcc.wellfare.model.Expenses;
 import com.pcc.wellfare.repository.BudgetRepository;
 import com.pcc.wellfare.repository.ExpensesRepository;
+import com.pcc.wellfare.requests.ExpensesRequest;
 import com.pcc.wellfare.response.ApiResponse;
 import com.pcc.wellfare.response.ResponseData;
 import com.pcc.wellfare.service.ExpensesService;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/expenses")
@@ -30,23 +32,24 @@ public class ExpensesController {
         this.expensesRepository = expensesRepository;
     }
 
-    // @PostMapping(value = "/create")
-    // public ResponseEntity<ApiResponse> createExpenses(
-    //         @RequestBody TestCreateExpensesRequest createExpensesRequest
-    //         ) {
-    //     ApiResponse response = new ApiResponse();
-    //     ResponseData data = new ResponseData();
-    //     try {
-    //         Expenses expenses = expensesService.create(createExpensesRequest);
-    //         data.setResult(expenses);
-    //         response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
-    //         response.setResponseData(data);
-    //         return ResponseEntity.ok().body(response);
-    //     } catch (Exception e) {
-    //         response.setResponseMessage(e.getMessage());
-    //         return ResponseEntity.internalServerError().body(response);
-    //     }
-    // }
+     @PostMapping(value = "/create")
+     public ResponseEntity<ApiResponse> createExpenses(
+             @RequestBody ExpensesRequest expensesRequest,
+             @RequestParam Long empId
+             ) {
+         ApiResponse response = new ApiResponse();
+         ResponseData data = new ResponseData();
+         try {
+             Object expenses = expensesService.create(expensesRequest,empId);
+             data.setResult(expenses);
+             response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
+             response.setResponseData(data);
+             return ResponseEntity.ok().body(response);
+         } catch (Exception e) {
+             response.setResponseMessage(e.getMessage());
+             return ResponseEntity.internalServerError().body(response);
+         }
+     }
 
     @GetMapping(value = "/getAllExpenseInUsed")
     public ResponseEntity<List<Expenses>> getAllExpenseInUsed() {
@@ -55,11 +58,11 @@ public class ExpensesController {
     }
 
     @GetMapping(value = "/getTotal")
-    public ResponseEntity<ApiResponse> getTotal(Long empId) {
+    public ResponseEntity<ApiResponse> getTotal(Long userId) {
         ApiResponse response = new ApiResponse();
         ResponseData data = new ResponseData();
         try {
-            Object budgets = expensesService.getTotal(empId);
+            Object budgets = expensesService.getTotal(userId);
             data.setResult(budgets);
             response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
             response.setResponseData(data);
@@ -71,12 +74,11 @@ public class ExpensesController {
     }
 
     @GetMapping(value = "/getExpenses")
-    public ResponseEntity<ApiResponse> getexpenses(Long empId) {
+    public ResponseEntity<ApiResponse> getExpenses(Long userId) {
         ApiResponse response = new ApiResponse();
         ResponseData data = new ResponseData();
         try {
-            List<Object[]> budgets = expensesRepository.getUse(empId);
-            System.out.println(budgets);
+            Object budgets = expensesService.getExpenses(userId);
             data.setResult(budgets);
             response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
             response.setResponseData(data);
@@ -86,6 +88,7 @@ public class ExpensesController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+
 
 
     private double parseDoubleWithComma(String value) {
@@ -98,19 +101,40 @@ public class ExpensesController {
         return "Hello world2";
     }
 
-    @DeleteMapping(value = "/deleteExpenses")
-    public String deleteExpenses() {
-        return "Hello world2";
+    @DeleteMapping(value = "/deleteExpenses/{expensesId}")
+    public ResponseEntity<ApiResponse> deleteExpenses(@PathVariable Long expensesId) {
+        ApiResponse response = new ApiResponse();
+        ResponseData data = new ResponseData();
+        try {
+            Optional<Expenses> expensesOptional = expensesRepository.findById(expensesId);
+    
+            if (expensesOptional.isPresent()) {
+                Expenses expenses = expensesOptional.get();
+                expensesRepository.delete(expenses);
+    
+                response.setResponseMessage("ลบข้อมูลเรียบร้อย");
+                response.setResponseData(data);
+                return ResponseEntity.ok().body(response);
+            } else {
+                response.setResponseMessage("ไม่พบข้อมูลที่ต้องการลบ");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            response.setResponseMessage("เกิดข้อผิดพลาดในระหว่างการลบข้อมูล");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
 
-    @GetMapping("/searchExpenses/{empId}")
-public ResponseEntity<List<Expenses>> findByEmpid(@PathVariable Long empId) {
-    List<Expenses> expensesList = expensesService.getExpensesById(empId);
-    if (expensesList.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    } else {
-        return new ResponseEntity<>(expensesList, HttpStatus.OK);
-    }
-}
+
+
+//    @GetMapping("/searchExpenses/{empId}")
+//public ResponseEntity<List<Expenses>> findByEmpid(@PathVariable Long empId) {
+//    Optional<Expenses> expensesList = expensesService.getExpensesById(empId);
+//    if (expensesList.isEmpty()) {
+//        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//    } else {
+//        return new ResponseEntity<>(expensesList, HttpStatus.OK);
+//    }
+//}
 }
