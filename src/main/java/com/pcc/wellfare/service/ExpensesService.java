@@ -75,7 +75,7 @@ public class ExpensesService {
                 double useIpd = parseDoubleWithComma(use[1].toString());
                 double canOpd = parseDoubleWithComma(can[0].toString());
                 double canIpd = parseDoubleWithComma(can[1].toString());
-                
+
                 double totalOpd = canOpd - useOpd;
                 double totalIpd = canIpd - useIpd;
 
@@ -112,6 +112,7 @@ public class ExpensesService {
     public Object create(ExpensesRequest expensesRequest, Long userId) {
         Optional<Employee> employeeOptional = employeeRepository.findById(userId);
         Employee employee = employeeOptional.orElseThrow(() -> new RuntimeException("Employee not found"));
+
         float perDay = budgetRepository.getPerDay(userId);
         float opdExpenses = (expensesRepository.getUseOpd(userId) != null) ? expensesRepository.getUseOpd(userId) : 0.0f;
         float ipdExpenses = (expensesRepository.getUseIpd(userId) != null) ? expensesRepository.getUseIpd(userId) : 0.0f;
@@ -135,7 +136,6 @@ public class ExpensesService {
             } else if (totalOpd >= withdrawOpd) {
                 totalOpd = totalOpd - withdrawOpd;
                 canWithdraw = withdrawOpd;
-                System.out.println("0");
                 if (totalOpd == 0) {
                     return canWithdraw;
                 } else {
@@ -143,27 +143,22 @@ public class ExpensesService {
                         if (deduct > totalOpd) {
                             canWithdraw = withdrawOpd+totalOpd;
                             totalOpd = 0;
-                            System.out.println("1");
                         } else {
                             totalOpd = totalOpd - deduct;
                             canWithdraw = withdrawOpd+deduct;
-                            System.out.println("2");
                         }
                     } else {
                         if (totalOpd - roomService < 0) {
                             canWithdraw =  canWithdraw + totalOpd;
                             totalOpd = 0;
-                            System.out.println("3");
                         } else {
                             totalOpd = totalOpd - roomService;
                             canWithdraw = withdrawOpd + roomService;
-                            System.out.println("4");
                         }
                     }
                 }
             } else {
                 canWithdraw = totalOpd;
-                System.out.println("5");
             }
         } else if (types.equals("ipd")) {
             if (totalIpd == 0) {
