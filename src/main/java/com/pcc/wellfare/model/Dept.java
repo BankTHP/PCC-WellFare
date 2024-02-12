@@ -1,8 +1,6 @@
 
 package com.pcc.wellfare.model;
 
-import java.util.Set;
-
 import jakarta.persistence.*;
 import lombok.*;
 

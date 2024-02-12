@@ -15,7 +15,6 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userId")
     private long userId;
-
     private Long empid;
     private String tprefix;
     private String tname;

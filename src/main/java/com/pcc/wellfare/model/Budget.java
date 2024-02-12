@@ -1,7 +1,5 @@
 package com.pcc.wellfare.model;
 
-import java.util.Set;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +12,7 @@ import lombok.*;
 @Setter
 public class Budget {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

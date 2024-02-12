@@ -1,16 +1,15 @@
 package com.pcc.wellfare.repository;
 
-import com.pcc.wellfare.model.Expenses;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.pcc.wellfare.model.Employee;
-import java.util.List;
-import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+    boolean existsByEmail(String email);
 
     Optional<Employee> findByEmpid(Long empid);
 
-
-
+    Optional<Employee> findById(Long userId);
 }

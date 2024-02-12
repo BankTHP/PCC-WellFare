@@ -5,21 +5,25 @@ import lombok.Data;
 
 import java.util.List;
 
+import com.pcc.wellfare.model.Budget;
+import com.pcc.wellfare.model.Dept;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 @Data
 @Builder
 public class EditEmployeeRequest {
 
-  String empCode;
-  String title;
-  String firstname;
-  String lastname;
-  String positionName;
+  String code;
+  String deptId;
+  String tPrefix;
+  String tName;
+  String tSurname;
+  String tPosition;
+  String level;
+  String remark;
+  String status;
   String email;
-
-  Long dept_actual;
-  Long sector_actual;
-  private List<Long> deptID;
-  private List<Long> companyID;
-  private List<Long> sectorID;
-  private List<String> roles;
 }
