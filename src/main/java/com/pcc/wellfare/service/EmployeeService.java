@@ -20,6 +20,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -282,6 +284,10 @@ public class EmployeeService {
                     })
                     .collect(Collectors.toSet());
         }
+    }
+    
+    public Page<Employee> getAllEmpsByPage(Pageable pageeble){
+    	return employeeRepository.findAll(pageeble);
     }
 
 }

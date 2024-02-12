@@ -11,6 +11,8 @@ import com.pcc.wellfare.service.EmployeeService;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,7 @@ public class EmployeeContoller {
     public EmployeeContoller(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
+    
     @GetMapping(value = "/findAll")
     public ResponseEntity<ApiResponse> findAllEmp() {
     	ApiResponse response = new ApiResponse();
@@ -134,6 +137,11 @@ public class EmployeeContoller {
     public ResponseEntity<Integer> uploadEmps(
             @RequestPart("file") MultipartFile file) throws IOException {
         return ResponseEntity.ok(employeeService.uploadEmps(file));
+    }
+    
+    @GetMapping(value = "/getEmpsByPage")
+    public Page<Employee> getEmpsByPage(Pageable pageeble){
+    	return employeeService.getAllEmpsByPage(pageeble);
     }
 
 }
