@@ -25,6 +25,21 @@ public class EmployeeContoller {
     public EmployeeContoller(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
+    @GetMapping(value = "/findAll")
+    public ResponseEntity<ApiResponse> findAllEmp() {
+    	ApiResponse response = new ApiResponse();
+    	ResponseData data = new ResponseData();
+    	try {
+			List<Employee> allEmps = employeeService.getAllEmployees();
+			data.setResult(allEmps);
+			response.setResponseData(data);
+			response.setResponseMessage("สำเร็จ");
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			response.setResponseMessage(e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+		}
+    }
 
     @PostMapping(value = "/create")
     public ResponseEntity<ApiResponse> createEmployee(
