@@ -30,7 +30,7 @@ public class BudgetService {
 	public Budget create(CreateBudgetRequest createBudgetRequest) {
 
 		Budget budget = Budget.builder().opd(createBudgetRequest.getOpd()).ipd(createBudgetRequest.getIpd())
-				.level(createBudgetRequest.getLevel()).room(createBudgetRequest.getRoomFood()).build();
+				.level(createBudgetRequest.getLevel()).room(createBudgetRequest.getRoom()).build();
 
 		return budgetRepository.save(budget);
 	}
@@ -43,7 +43,7 @@ public class BudgetService {
 		budget.setIpd(createBudgetRequest.getIpd());
 		budget.setOpd(createBudgetRequest.getOpd());
 		budget.setLevel(createBudgetRequest.getLevel());
-		budget.setRoom(createBudgetRequest.getRoomFood());
+		budget.setRoom(createBudgetRequest.getRoom());
 
 		return budgetRepository.save(budget);
 	}

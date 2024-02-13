@@ -289,5 +289,13 @@ public class EmployeeService {
     public Page<Employee> getAllEmpsByPage(Pageable pageeble){
     	return employeeRepository.findAll(pageeble);
     }
+    
+    public List<Employee> findEmployeesByNameAndSurnameStartsWith(String name, String surnameStart) {
+        return employeeRepository.findByTnameEqualsAndTsurnameStartingWith(name, surnameStart);
+    }
+    
+    public List<Employee> findByTnameContainingOrTsurnameContaining(String fname, String Sname){
+    	return employeeRepository.findByTnameContainingOrTsurnameContaining(fname,Sname);
+    }
 
 }

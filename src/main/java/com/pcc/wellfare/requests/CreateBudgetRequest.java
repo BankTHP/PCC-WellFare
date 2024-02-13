@@ -10,5 +10,5 @@ public class CreateBudgetRequest {
   String level;
   String opd;
   String ipd;
-  String roomFood;
+  String room;
 }
