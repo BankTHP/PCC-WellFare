@@ -14,8 +14,8 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userId")
-    private long userId;
-    private Long empid;
+    private Long userId;
+    private String empid;
     private String tprefix;
     private String tname;
     private String tsurname;

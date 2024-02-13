@@ -16,7 +16,7 @@ import lombok.Setter;
 public class EmployeeCsvRepresentation {
 	
 	@CsvBindByName(column = "EmpID")
-	private Long empid;
+	private String empid;
 	
 	@CsvBindByName(column = "Tprefix")
 	private String tprefix;

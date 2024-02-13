@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class CreateEmployeeRequest {
 
-    Long empId;
+	String empId;
     String code;
     String deptId;
     String tPrefix;

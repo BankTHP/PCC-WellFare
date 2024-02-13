@@ -32,11 +32,11 @@ public class ExpensesController {
 
 	@PostMapping(value = "/create")
 	public ResponseEntity<ApiResponse> createExpenses(@RequestBody ExpensesRequest expensesRequest,
-			@RequestParam Long empId) {
+			@RequestParam Long userId) {
 		ApiResponse response = new ApiResponse();
 		ResponseData data = new ResponseData();
 		try {
-			Object expenses = expensesService.create(expensesRequest, empId);
+			Object expenses = expensesService.create(expensesRequest, userId);
 			data.setResult(expenses);
 			response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
 			response.setResponseData(data);
