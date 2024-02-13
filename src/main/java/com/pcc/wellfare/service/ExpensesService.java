@@ -59,7 +59,7 @@ public class ExpensesService {
     public Map<String, Double> getTotal(Long userId) {
         List<Object[]> useBudget = expensesRepository.getUse(userId);
         List<Object[]> canUseBudget = budgetRepository.getCanUse(userId);
-
+//        const RoomService = emp.file
         if (canUseBudget.isEmpty()) {
             throw new RuntimeException("Can Use Budget is empty");
         } else {
@@ -68,8 +68,10 @@ public class ExpensesService {
                 Object[] can = canUseBudget.get(0);
                 double canOpd = parseDoubleWithComma(can[0].toString());
                 double canIpd = parseDoubleWithComma(can[1].toString());
+                double roomService = budgetRepository.getPerDay(userId);
                 responseData.put("opd", canOpd);
                 responseData.put("ipd", canIpd);
+                responseData.put("room", roomService);
                 return responseData;
             } else {
                 Object[] use = useBudget.get(0);
@@ -82,10 +84,13 @@ public class ExpensesService {
 
                 double totalOpd = canOpd - useOpd;
                 double totalIpd = canIpd - useIpd;
+                double roomService = budgetRepository.getPerDay(userId);
 
                 Map<String, Double> responseData = new HashMap<>();
                 responseData.put("opd", totalOpd);
                 responseData.put("ipd", totalIpd);
+                responseData.put("room", roomService);
+
                 return responseData;
             }
         }

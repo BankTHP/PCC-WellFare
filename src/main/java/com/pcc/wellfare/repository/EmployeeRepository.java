@@ -21,4 +21,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findByTnameEqualsAndTsurnameStartingWith(String name, String surnameStart);
     
     List<Employee> findByTnameContainingOrTsurnameContaining(String name, String surname);
+   
 }

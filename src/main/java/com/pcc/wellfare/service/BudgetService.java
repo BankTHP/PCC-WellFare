@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,7 @@ public class BudgetService {
     }
 
 	private Set<Budget> parseCsv(MultipartFile file) throws IOException {
-		try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+		try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
 			HeaderColumnNameMappingStrategy<BudgetCsvRepresentation> strategy = new HeaderColumnNameMappingStrategy<>();
 			strategy.setType(BudgetCsvRepresentation.class);
 			CsvToBean<BudgetCsvRepresentation> csvToBean = new CsvToBeanBuilder<BudgetCsvRepresentation>(reader)

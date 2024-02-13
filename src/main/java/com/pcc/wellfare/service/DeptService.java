@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -83,7 +84,7 @@ public class DeptService {
 	}
 
 	private Set<Dept> parseCsv(MultipartFile file) throws IOException {
-		try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+		try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream() ,StandardCharsets.UTF_8))) {
 			HeaderColumnNameMappingStrategy<DeptCsvRepresentation> strategy = new HeaderColumnNameMappingStrategy<>();
 			strategy.setType(DeptCsvRepresentation.class);
 			CsvToBean<DeptCsvRepresentation> csvToBean = new CsvToBeanBuilder<DeptCsvRepresentation>(reader)

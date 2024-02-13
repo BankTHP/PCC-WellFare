@@ -31,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -256,7 +257,7 @@ public class EmployeeService {
     }
 
     private Set<Employee> parseCsv(MultipartFile file) throws IOException {
-        try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+        try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream() , StandardCharsets.UTF_8))) {
             HeaderColumnNameMappingStrategy<EmployeeCsvRepresentation> strategy = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(EmployeeCsvRepresentation.class);
             CsvToBean<EmployeeCsvRepresentation> csvToBean = new CsvToBeanBuilder<EmployeeCsvRepresentation>(reader)
