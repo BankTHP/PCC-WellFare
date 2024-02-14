@@ -16,6 +16,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
@@ -92,14 +93,14 @@ public class EmployeeService {
 	}
 
 	public Employee updateEmployee(Long userid, EditEmployeeRequest editEmployeeRequest) {
-//        String email = editEmployeeRequest.getEmail();
+		// String email = editEmployeeRequest.getEmail();
 
-//        if (email == null || email.isEmpty() || email.equals("")) {
-//        } else {
-//            if (employeeRepository.existsByEmail(email)) {
-//                throw new RuntimeException("Email is already in use.");
-//            }
-//        }
+		// if (email == null || email.isEmpty() || email.equals("")) {
+		// } else {
+		// if (employeeRepository.existsByEmail(email)) {
+		// throw new RuntimeException("Email is already in use.");
+		// }
+		// }
 		Optional<Budget> budgetOptional = budgetRepository.findByLevel(editEmployeeRequest.getLevel());
 		Budget budget = budgetOptional.orElseThrow(() -> new RuntimeException("Budget not found"));
 		Optional<Dept> deptOptional = deptRepository.findById(editEmployeeRequest.getDeptCode());
@@ -139,8 +140,15 @@ public class EmployeeService {
 		}
 	}
 
-	public Object searchUser(String empid, String tprefix, String tname, String tsurname, String tposition,
-			String budget, String dept, String remark, String email, String status) {
+	public Object searchUser(
+			Long empid,
+			String tprefix,
+			String name,
+			String tposition,
+			String deptcode,
+			String remark,
+			String status,
+			String email) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Employee> query = builder.createQuery(Employee.class);
 		Root<Employee> root = query.from(Employee.class);
@@ -148,46 +156,59 @@ public class EmployeeService {
 		List<Predicate> predicates = new ArrayList<>();
 
 		if (empid != null) {
-			predicates.add(builder.like(builder.lower(root.get("empid")), "%" + empid.toLowerCase() + "%"));
+			System.out.println("EmployeeService.searchUser()");
+			predicates.add(
+					builder.equal(
+							root.get("empid"),
+							empid));
 		}
 
-		if (tname != null) {
-			Expression<String> fullName = builder.concat(builder.concat(builder.lower(root.get("firstname")), " "),
-					builder.lower(root.get("lastname")));
-			predicates.add(builder.like(builder.lower(fullName), "%" + tname.toLowerCase() + "%"));
-		}
-		if (tsurname != null) {
-			Expression<String> fullName = builder.concat(builder.concat(builder.lower(root.get("firstname")), " "),
-					builder.lower(root.get("lastname")));
-			predicates.add(builder.like(builder.lower(fullName), "%" + tsurname.toLowerCase() + "%"));
+		if (name != null) {
+			Expression<String> fullName = builder.concat(
+					builder.concat(builder.lower(root.get("tname")), " "),
+					builder.lower(root.get("tsurname")));
+			predicates.add(
+					builder.like(builder.lower(fullName), "%" + name.toLowerCase() + "%"));
 		}
 
 		if (email != null) {
-			predicates.add(builder.like(builder.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
+			predicates.add(
+					builder.like(
+							builder.lower(root.get("email")),
+							"%" + email.toLowerCase() + "%"));
+		}
+		if (tprefix != null) {
+			predicates.add(
+					builder.like(
+							builder.lower(root.get("tprefix")),
+							"%" + tprefix.toLowerCase() + "%"));
 		}
 
-		if (tposition != null && !tposition.isEmpty()) {
-			predicates.add(builder.like(builder.lower(root.get("tposition")), "%" + tposition.toLowerCase() + "%"));
+		if (tposition != null) {
+			predicates.add(
+					builder.like(
+							builder.lower(root.get("tposition")),
+							"%" + tposition.toLowerCase() + "%"));
 		}
 
-		if (budget != null && !budget.isEmpty()) {
-			predicates.add(builder.equal(root.get("budget"), budget));
+		if (deptcode != null) {
+			Join<Employee, Dept> deptJoin = root.join("dept");
+			predicates.add(
+					builder.equal((deptJoin.get("deptcode")),
+							deptcode));
+		}
+		if (remark != null) {
+			predicates.add(
+					builder.like(
+							builder.lower(root.get("remark")),
+							"%" + remark.toLowerCase() + "%"));
 		}
 
-		if (dept != null && !dept.isEmpty()) {
-			predicates.add(builder.equal(root.get("department"), dept));
-		}
-
-		if (remark != null && !remark.isEmpty()) {
-			predicates.add(builder.like(builder.lower(root.get("remark")), "%" + remark.toLowerCase() + "%"));
-		}
-
-		if (email != null && !email.isEmpty()) {
-			predicates.add(builder.like(builder.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
-		}
-
-		if (status != null && !status.isEmpty()) {
-			predicates.add(builder.equal(root.get("status"), status));
+		if (status != null) {
+			predicates.add(
+					builder.equal(
+							root.get("status"),
+							status));
 		}
 
 		if (predicates.isEmpty()) {
@@ -235,17 +256,17 @@ public class EmployeeService {
 			}).collect(Collectors.toSet());
 		}
 	}
-	
-	private Date StringDateConverter(String dateString){
+
+	private Date StringDateConverter(String dateString) {
 		try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-            return dateFormat.parse(dateString);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+			return dateFormat.parse(dateString);
+		} catch (java.text.ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
-	
+
 	public Page<Employee> getAllEmpsByPage(Pageable pageeble) {
 		return employeeRepository.findAll(pageeble);
 	}

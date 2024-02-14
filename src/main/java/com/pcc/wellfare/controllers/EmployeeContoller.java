@@ -107,14 +107,24 @@ public class EmployeeContoller {
 	}
 
 	@GetMapping("/searchUser")
-	public Object search(@RequestParam(required = false) String empid, @RequestParam(required = false) String tprefix,
-			@RequestParam(required = false) String tname, @RequestParam(required = false) String tsurname,
-			@RequestParam(required = false) String tposition, @RequestParam(required = false) String dept,
-			@RequestParam(required = false) String budget, @RequestParam(required = false) String remark,
-			@RequestParam(required = false) String status, @RequestParam(required = false) String email)
-			throws JsonProcessingException {
-		return employeeService.searchUser(empid, tprefix, tname, email, tsurname, tposition, budget, dept, remark,
-				status);
+	public Object search(
+			@RequestParam(required = false) Long empid,
+			@RequestParam(required = false) String tprefix,
+			@RequestParam(required = false) String name,
+			@RequestParam(required = false) String tposition,
+			@RequestParam(required = false) String deptcode,
+			@RequestParam(required = false) String remark,
+			@RequestParam(required = false) String status,
+			@RequestParam(required = false) String email) throws JsonProcessingException {
+		return employeeService.searchUser(
+				empid,
+				tprefix,
+				name,
+				tposition,
+				deptcode,
+				remark,
+				status,
+				email);
 	}
 
 	@PostMapping(value = "/uploadEmps", consumes = { "multipart/form-data" })
