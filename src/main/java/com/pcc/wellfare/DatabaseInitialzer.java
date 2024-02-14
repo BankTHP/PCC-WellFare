@@ -13,34 +13,25 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 @Component
 public class DatabaseInitialzer implements CommandLineRunner {
 
 
-    private final BudgetService budgetService;
-    private final DeptService deptService;
-    private  final EmployeeService employeeService;
     private final JdbcTemplate jdbcTemplate;
     private HttpHeaders headers = new HttpHeaders();
 
-    public DatabaseInitialzer(BudgetService budgetService, DeptService deptService, EmployeeService employeeService, JdbcTemplate jdbcTemplate) {
-        this.budgetService = budgetService;
-        this.deptService = deptService;
-        this.employeeService = employeeService;
+    public DatabaseInitialzer(JdbcTemplate jdbcTemplate) {
+
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        insertDataIntoEmployeeTable();
         insertDataIntoBudgetTable();
         insertDataIntodeptTable();
+        insertDataIntoEmployeeTable();
     }
 
     private boolean isTableEmpty(String tableName) {
