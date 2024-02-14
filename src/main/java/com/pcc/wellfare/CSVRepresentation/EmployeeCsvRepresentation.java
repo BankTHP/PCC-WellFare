@@ -1,5 +1,7 @@
 package com.pcc.wellfare.CSVRepresentation;
 
+import java.util.Date;
+
 import com.opencsv.bean.CsvBindByName;
 
 import lombok.AllArgsConstructor;
@@ -44,5 +46,8 @@ public class EmployeeCsvRepresentation {
 	
 	@CsvBindByName(column = "Code")
 	private String code;
+	
+	@CsvBindByName(column = "StartDate")
+	private String startdate;
 
 }

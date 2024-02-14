@@ -1,5 +1,7 @@
 package com.pcc.wellfare.model;
 
+import java.util.Date;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,7 +22,7 @@ public class Employee {
     private String tname;
     private String tsurname;
     private String tposition;
-
+    private Date startDate;
     @ManyToOne
     @JoinColumn(name = "budget_id")
     private Budget budget;
