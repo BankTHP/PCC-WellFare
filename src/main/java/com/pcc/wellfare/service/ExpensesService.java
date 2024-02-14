@@ -176,7 +176,7 @@ public class ExpensesService {
                 .days(expensesRequest.getDays())
                 .startDate(expensesRequest.getStartDate())
                 .endDate(expensesRequest.getEndDate())
-                .dateOfAdmission(expensesRequest.getAdMission())
+                .dateOfAdmission(new Date())
                 .description(expensesRequest.getDescription())
                 .remark(expensesRequest.getRemark())
         		.build();
