@@ -8,6 +8,9 @@ import com.pcc.wellfare.repository.EmployeeRepository;
 import com.pcc.wellfare.repository.ExpensesRepository;
 
 import com.pcc.wellfare.requests.ExpensesRequest;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -286,7 +289,10 @@ public class ExpensesService {
 
         return expensesRepository.save(expenses);
     }
-
+    
+    public Page<Expenses> getAllExpenseByPage(Pageable pageeble) {
+		return expensesRepository.findAll(pageeble);
+	}
 }
 
 

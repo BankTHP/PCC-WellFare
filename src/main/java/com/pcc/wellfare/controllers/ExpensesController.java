@@ -1,6 +1,7 @@
 package com.pcc.wellfare.controllers;
 
 import com.pcc.wellfare.model.Budget;
+import com.pcc.wellfare.model.Employee;
 import com.pcc.wellfare.model.Expenses;
 import com.pcc.wellfare.repository.BudgetRepository;
 import com.pcc.wellfare.repository.ExpensesRepository;
@@ -9,6 +10,8 @@ import com.pcc.wellfare.response.ApiResponse;
 import com.pcc.wellfare.response.ResponseData;
 import com.pcc.wellfare.service.ExpensesService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -144,6 +147,11 @@ public class ExpensesController {
 			response.setResponseMessage("เกิดข้อผิดพลาดในระหว่างการลบข้อมูล");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
+	}
+	
+	@GetMapping(value = "/getExpenseByPage")
+	public Page<Expenses> getExpenseByPage(Pageable pageeble) {
+		return expensesService.getAllExpenseByPage(pageeble);
 	}
 
 //    @GetMapping("/searchExpenses/{empId}")
