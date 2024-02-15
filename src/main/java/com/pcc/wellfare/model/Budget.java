@@ -17,10 +17,10 @@ public class Budget {
     private Long id;
 
     private String level;
-    private String opd;
-    private String ipd;
+    private Double opd;
+    private Double ipd;
 
     @Column(name = "ค่าห้อง_ค่าอาหาร")
-    private String room;
+    private Double room;
 
 }

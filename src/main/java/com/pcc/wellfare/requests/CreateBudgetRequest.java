@@ -8,7 +8,7 @@ import lombok.Data;
 public class CreateBudgetRequest {
 
   String level;
-  String opd;
-  String ipd;
-  String room;
+  Double opd;
+  Double ipd;
+  Double room;
 }

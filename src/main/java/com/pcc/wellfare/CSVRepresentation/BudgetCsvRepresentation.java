@@ -22,11 +22,11 @@ public class BudgetCsvRepresentation {
 	private String level;
 	
 	@CsvBindByName(column = "OPD")
-	private String opd;
+	private Double opd;
 	
 	@CsvBindByName(column = "IPD")
-	private String ipd;
+	private Double ipd;
 	
 	@CsvBindByName(column = "Room")
-	private String room;
+	private Double room;
 }

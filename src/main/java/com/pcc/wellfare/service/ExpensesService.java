@@ -479,6 +479,72 @@ public class ExpensesService {
     
         return expensesRepository.save(expenses);
     }
+    
+    public Object withDraw(ExpensesRequest expensesRequest, Long userId) {
+        Optional<Employee> employeeOptional = employeeRepository.findById(userId);
+        Employee employee = employeeOptional.orElseThrow(() -> new RuntimeException("Employee not found"));
+        String type1 = expensesRequest.getTypes();
+        float perDay = budgetRepository.getPerDay(userId);
+        float roomServiceLimit = perDay * expensesRequest.getDays();
+        float roomServiceRequest = expensesRequest.getRoomService();
+        //roomService can withdraw
+        float roomServiceCanUse = (roomServiceRequest >= roomServiceLimit) ? roomServiceLimit : roomServiceRequest;
+        //get MAXLimit of OPD and IPD
+        float ipdMaxLimit = budgetRepository.getIPDlimit(userId);
+        float opdMaxLimit = budgetRepository.getOPDlimit(userId);
+        //get Used OPD and IPD
+        float usedOpd = (expensesRepository.getUseOpd(userId) != null) ? expensesRepository.getUseOpd(userId) : 0.0f;
+        float usedIpd = (expensesRepository.getUseIpd(userId) != null) ? expensesRepository.getUseIpd(userId) : 0.0f;
+        //calculate for defined Limit can Withdraw expense
+        float ipdLimit = ipdMaxLimit - usedIpd;
+        float opdLimit = opdMaxLimit - usedOpd;
+        //health cost request select by type
+        float healthCostRequest = (type1.equals("ipd")) ? expensesRequest.getIpd() : expensesRequest.getOpd();
+        //get health cost limit by type
+        float healthCostLimit = (type1.equals("ipd")) ? ipdLimit : opdLimit;
+        //Sum all cost request
+        float healthCost = healthCostRequest + roomServiceCanUse;
+        float canWithdraw = 0.0f;
+        if(healthCostLimit >= healthCost) {
+            canWithdraw = healthCost;
+        }else {
+            canWithdraw = healthCostLimit;
+        }
+        
+        Expenses expense = Expenses.builder()
+                .employee(employee)
+                .ipd(expensesRequest.getIpd())
+                .opd(expensesRequest.getOpd())
+                .roomService(expensesRequest.getRoomService())
+                .canWithdraw(canWithdraw)
+                .days(expensesRequest.getDays())
+                .startDate(expensesRequest.getStartDate())
+                .endDate(expensesRequest.getEndDate())
+                .dateOfAdmission(expensesRequest.getAdMission())
+                .description(expensesRequest.getDescription())
+                .remark(expensesRequest.getRemark())
+                .build();
+        return expensesRepository.save(expense);
+    }
+    
+    public Map<String, Double> getTotalExpense(Long uid) {
+        //get MAXLimit of OPD and IPD
+        float ipdMaxLimit = budgetRepository.getIPDlimit(uid);
+        float opdMaxLimit = budgetRepository.getOPDlimit(uid);
+        //useed OPD and IPD
+        float usedOpd = (expensesRepository.getUseOpd(uid) != null) ? expensesRepository.getUseOpd(uid) : 0.0f;
+        float usedIpd = (expensesRepository.getUseIpd(uid) != null) ? expensesRepository.getUseIpd(uid) : 0.0f;
+        //remain
+        float opdRemain = opdMaxLimit - usedOpd;
+        float ipdRemain = ipdMaxLimit - usedIpd;
+        float roomService = budgetRepository.getPerDay(uid);
+        Map<String, Double> responseData = new HashMap<>();
+        responseData.put("opd", (double) opdRemain);
+        responseData.put("ipd", (double) ipdRemain);
+        responseData.put("room", (double) roomService);
+
+        return responseData;
+    }
 
 }
 
