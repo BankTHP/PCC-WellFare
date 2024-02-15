@@ -219,6 +219,28 @@ public class ExpensesService {
     public Page<Expenses> getAllExpenseByPage(Pageable pageeble) {
 		return expensesRepository.findAll(pageeble);
 	}
+    
+    public Page<Expenses> getAllExpenseByFilter(Pageable pageeble, String type, String value){
+		Long userId = 0l;
+    	if(type == "name") {
+    		String[] names = value.split("\\s+", 2);
+			String name = names[0];
+			String surnameStart = names[1];
+			Optional<Long> userIdOptional = employeeRepository.findUserIdByTnameAndTsurname(name, surnameStart);
+	        userId = userIdOptional.orElse(0L);
+		}else if(type == "code"){
+			String code = value;
+			Optional<Long> userIdOptional = employeeRepository.findUserIdByEmpid(code);
+	        userId = userIdOptional.orElse(0L);
+		}
+    	
+    	if (userId != 0L) {
+            return expensesRepository.findAllByEmployeeUserId(userId, pageeble);
+        } else {
+            return Page.empty();
+        }
+    	
+    }
 
     // public Object update(ExpensesRequest expensesRequest, Long userId, Long expensesId) {
     //     Optional<Expenses> expensesOptional = expensesRepository.findById(expensesId);

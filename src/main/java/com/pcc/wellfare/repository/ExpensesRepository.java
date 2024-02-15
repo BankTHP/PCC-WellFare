@@ -2,7 +2,8 @@ package com.pcc.wellfare.repository;
 
 import com.pcc.wellfare.model.Expenses;
 
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -36,6 +37,9 @@ public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
     List<Expenses> findByDateOfAdmissionIsNotNull();
 
     List<Expenses> findByEmployeeUserId(Long userId);
+
+
+    Page<Expenses> findAllByEmployeeUserId(Long userId, Pageable pageable);
     
 
     

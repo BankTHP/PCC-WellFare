@@ -2,6 +2,7 @@ package com.pcc.wellfare.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.pcc.wellfare.model.Employee;
+import com.pcc.wellfare.repository.EmployeeRepository;
 import com.pcc.wellfare.requests.CreateEmployeeRequest;
 import com.pcc.wellfare.requests.EditEmployeeRequest;
 import com.pcc.wellfare.response.ApiResponse;
@@ -10,7 +11,9 @@ import com.pcc.wellfare.service.EmployeeService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,7 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping(value = "/employee")
 public class EmployeeContoller {
-
+	
+	@Autowired
+	private EmployeeRepository employeeRepository;
 	private final EmployeeService employeeService;
 
 	public EmployeeContoller(EmployeeService employeeService) {
@@ -169,6 +174,12 @@ public class EmployeeContoller {
 			response.setResponseMessage("ไม่พบข้อมูลที่ตรงกับที่ระบุ");
 			return ResponseEntity.badRequest().body(response);
 		}
+	}
+
+	
+	@GetMapping("getIdByname")
+	public Optional<Long> getIdBytnameAndSname(@RequestParam String tname,@RequestParam String sname) {
+		return employeeRepository.findUserIdByTnameAndTsurname(tname, sname);
 	}
 
 }
