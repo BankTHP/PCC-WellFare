@@ -4,6 +4,7 @@ import com.pcc.wellfare.model.Budget;
 import com.pcc.wellfare.model.Employee;
 import com.pcc.wellfare.model.Expenses;
 import com.pcc.wellfare.repository.BudgetRepository;
+import com.pcc.wellfare.repository.EmployeeExpensesRepository;
 import com.pcc.wellfare.repository.ExpensesRepository;
 import com.pcc.wellfare.requests.ExpensesRequest;
 import com.pcc.wellfare.response.ApiResponse;
@@ -15,7 +16,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -33,13 +39,40 @@ public class ExpensesController {
 		this.expensesRepository = expensesRepository;
 	}
 
+			// @GetMapping("/expenses/{userId}")
+			// public List<EmployeeExpensesRepository> getExpensesByUserId(@PathVariable Long userId) {
+			// 	List<Expenses> expensesList = expensesService.getExpensesByUserId(userId);
+			// 	Map<Long, EmployeeExpensesRepository> employeeExpensesMap = new HashMap<>();
+
+			// 	for (Expenses expenses : expensesList) {
+			// 		Long employeeId = expenses.getEmployee().getUserId();
+			// 		if (!employeeExpensesMap.containsKey(employeeId)) {
+			// 			EmployeeExpensesRepository employeeExpensesRepository = new EmployeeExpensesRepository();
+			// 			employeeExpensesRepository.setId(expenses.getId());
+			// 			employeeExpensesRepository.setEmployee(expenses.getEmployee());
+			// 			employeeExpensesRepository.setExpensesList(new ArrayList<>());
+			// 			employeeExpensesMap.put(employeeId, employeeExpensesRepository);
+			// 		}
+			// 		employeeExpensesMap.get(employeeId).getExpensesList().add(expenses);
+			// 	}
+
+			// 	return new ArrayList<>(employeeExpensesMap.values());
+			// }
+
+
+
+	// @GetMapping("/user/{userId}")
+    // public List<Expenses> getByUserId(@PathVariable Long userId) {
+    //     return expensesService.getExpensesByUserId(userId);
+    // }
+
 	@PostMapping(value = "/create")
 	public ResponseEntity<ApiResponse> createExpenses(@RequestBody ExpensesRequest expensesRequest,
 			@RequestParam Long userId) {
 		ApiResponse response = new ApiResponse();
 		ResponseData data = new ResponseData();
 		try {
-			Object expenses = expensesService.withDraw(expensesRequest, userId);
+			Object expenses = expensesService.create(expensesRequest, userId);
 			data.setResult(expenses);
 			response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
 			response.setResponseData(data);
@@ -49,6 +82,40 @@ public class ExpensesController {
 			return ResponseEntity.internalServerError().body(response);
 		}
 	}
+
+	// @PutMapping(value = "/update/{expensesId}")
+	// public ResponseEntity<ApiResponse> updateExpenses(@RequestBody ExpensesRequest expensesRequest,
+	// 		@RequestParam Long userId, @PathVariable Long expensesId) {
+	// 	ApiResponse response = new ApiResponse();
+	// 	ResponseData data = new ResponseData();
+	// 	try {
+	// 		Object expenses = expensesService.update(expensesRequest, userId, expensesId);
+	// 		data.setResult(expenses);
+	// 		response.setResponseMessage("แก้ไขข้อมูลเรียบร้อย");
+	// 		response.setResponseData(data);
+	// 		return ResponseEntity.ok().body(response);
+	// 	} catch (Exception e) {
+	// 		response.setResponseMessage(e.getMessage());
+	// 		return ResponseEntity.internalServerError().body(response);
+	// 	}
+	// }
+
+	@PutMapping(value = "/update/{expensesId}")
+public ResponseEntity<ApiResponse> updateExpenses(@RequestBody ExpensesRequest expensesRequest,
+        @PathVariable Long expensesId) {
+    ApiResponse response = new ApiResponse();
+    ResponseData data = new ResponseData();
+    try {
+        Object expenses = expensesService.update(expensesRequest, expensesId);
+        data.setResult(expenses);
+        response.setResponseMessage("แก้ไขข้อมูลเรียบร้อย");
+        response.setResponseData(data);
+        return ResponseEntity.ok().body(response);
+    } catch (Exception e) {
+        response.setResponseMessage(e.getMessage());
+        return ResponseEntity.internalServerError().body(response);
+    }
+ }
 
 	@GetMapping(value = "/getAllExpenseInUsed")
 	public ResponseEntity<ApiResponse> getAllExpenseInUsed() {
@@ -66,12 +133,12 @@ public class ExpensesController {
 		}
 	}
 
-	@GetMapping(value = "/getExpenseRemaining")
+	@GetMapping(value = "/getTotal")
 	public ResponseEntity<ApiResponse> getTotal(Long userId) {
 		ApiResponse response = new ApiResponse();
 		ResponseData data = new ResponseData();
 		try {
-			Object budgets = expensesService.getTotalExpense(userId);
+			Object budgets = expensesService.getTotal(userId);
 			data.setResult(budgets);
 			response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
 			response.setResponseData(data);
@@ -120,10 +187,6 @@ public class ExpensesController {
 		return Double.parseDouble(value);
 	}
 
-	@PutMapping(value = "/editExpenses")
-	public String editExpenses() {
-		return "Hello world2";
-	}
 
 	@DeleteMapping(value = "/deleteExpenses/{expensesId}")
 	public ResponseEntity<ApiResponse> deleteExpenses(@PathVariable Long expensesId) {
@@ -154,13 +217,11 @@ public class ExpensesController {
 		return expensesService.getAllExpenseByPage(pageeble);
 	}
 
-//    @GetMapping("/searchExpenses/{empId}")
-//public ResponseEntity<List<Expenses>> findByEmpid(@PathVariable Long empId) {
-//    Optional<Expenses> expensesList = expensesService.getExpensesById(empId);
-//    if (expensesList.isEmpty()) {
-//        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//    } else {
-//        return new ResponseEntity<>(expensesList, HttpStatus.OK);
-//    }
-//}
+
+		@GetMapping("/searchExpenses/{empId}")
+		public Map<String, Object>findByEmpid(@PathVariable Long empId) {
+			Map<String, Object> expensesList = expensesService.getExpensesById(empId);
+			return expensesList;
+		}
+
 }

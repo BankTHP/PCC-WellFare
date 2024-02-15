@@ -34,4 +34,9 @@ public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
 //    List<Expenses> findByEmpId(Long empid);
     
     List<Expenses> findByDateOfAdmissionIsNotNull();
+
+    List<Expenses> findByEmployeeUserId(Long userId);
+    
+
+    
 }
