@@ -28,4 +28,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     
     @Query(value = "SELECT e.user_id FROM Employee e WHERE e.empid = ?1", nativeQuery = true)
     Optional<Long> findUserIdByEmpid(String empid);
+    
+    List<Employee> findByEmpidStartingWith(String empid);
 }

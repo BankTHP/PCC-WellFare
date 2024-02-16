@@ -132,8 +132,8 @@ public class ExpensesController {
 		}
 	}
 
-    @GetMapping(value = "/getExpenseRemaining")
-    public ResponseEntity<ApiResponse> getTotal(Long userId) {
+	@GetMapping(value = "/getExpenseRemaining")
+	public ResponseEntity<ApiResponse> getTotal(Long userId) {
 		ApiResponse response = new ApiResponse();
 		ResponseData data = new ResponseData();
 		try {
@@ -215,20 +215,28 @@ public class ExpensesController {
 		return expensesService.getAllExpenseByPage(pageeble);
 	}
 
-	@GetMapping("/searchExpenses/{empId}")
-	public Map<String, Object> findByEmpid(@PathVariable Long empId) {
-		Map<String, Object> expensesList = expensesService.getExpensesById(empId);
+	@GetMapping("/searchExpenses/{userId}")
+	public Map<String, Object> findByEmpid(@PathVariable Long userId) {
+		Map<String, Object> expensesList = expensesService.getExpensesById(userId);
 		return expensesList;
 	}
-	
+
 	@GetMapping("/getExpenseByPage/filter")
-    public Page<Expenses> getExpensesByPageAndFilter(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String searchType,
-            @RequestParam(required = false) String searchValue) {
-        Pageable pageable = PageRequest.of(page, size);
-        return expensesService.getAllExpenseByPage(pageable);
-    }
+	public Page<Expenses> getExpensesByPageAndFilter(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String searchType,
+			@RequestParam(required = false) String searchValue) {
+		Pageable pageable = PageRequest.of(page, size);
+		if (searchType.equals("name")) {
+			return expensesService.getExpensesByName(pageable, searchValue);
+		} else if (searchType.equals("code")) {
+			return expensesService.getExpenseByEmpCode(pageable, searchValue);
+		} else {
+			return Page.empty();
+		}
+//        if(searchType == "name") {
+//        	
+//        }
+//        return expensesService.getAllExpenseByFilter(pageable,searchType,searchValue);
+	}
 
 }

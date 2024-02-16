@@ -221,20 +221,49 @@ public class ExpensesService {
 		return expensesRepository.findAll(pageeble);
 	}
     
+    public Page<Expenses> getExpensesByName(Pageable pageable,String name){
+    	Long uid = 0l;
+    	String[] names = name.split("\\s+", 2);
+    	String fname = names[0];
+    	String surname = names[1];
+		Optional<Long> userIdOptional = employeeRepository.findUserIdByTnameAndTsurname(fname, surname);
+		uid = userIdOptional.orElse(0L);
+		if (uid != 0L) {
+            return expensesRepository.findAllByEmployeeUserId(uid, pageable);
+        } else {
+            return Page.empty();
+        }
+    }
+    
+    public Page<Expenses> getExpenseByEmpCode(Pageable pageable,String code){
+    	Long uid = 0l;
+    	Optional<Long> userIdOptional = employeeRepository.findUserIdByEmpid(code);
+    	uid = userIdOptional.orElse(0L);
+        if (uid != 0L) {
+            return expensesRepository.findAllByEmployeeUserId(uid, pageable);
+        } else {
+            return Page.empty();
+        }
+    }
+    
     public Page<Expenses> getAllExpenseByFilter(Pageable pageeble, String type, String value){
 		Long userId = 0l;
     	if(type == "name") {
     		String[] names = value.split("\\s+", 2);
 			String name = names[0];
-			String surnameStart = names[1];
-			Optional<Long> userIdOptional = employeeRepository.findUserIdByTnameAndTsurname(name, surnameStart);
+			String surname = names[1];
+	    	System.out.println(name);
+	    	System.out.println(surname);
+			Optional<Long> userIdOptional = employeeRepository.findUserIdByTnameAndTsurname(name, surname);
 	        userId = userIdOptional.orElse(0L);
 		}else if(type == "code"){
 			String code = value;
 			Optional<Long> userIdOptional = employeeRepository.findUserIdByEmpid(code);
 	        userId = userIdOptional.orElse(0L);
 		}
-    	
+    	System.out.println(userId);
+    	System.out.println(value);
+    	System.out.println(type);
     	if (userId != 0L) {
             return expensesRepository.findAllByEmployeeUserId(userId, pageeble);
         } else {
@@ -371,7 +400,7 @@ public class ExpensesService {
         List<Map<String, Object>> expensesList = new ArrayList<>();
 
         for (Object[] row : results) {
-            userMap.put("user_id", row[0]);
+            userMap.put("userId", row[0]);
             userMap.put("email", row[1]);
             userMap.put("empid", row[2]);
             userMap.put("remark", row[3]);

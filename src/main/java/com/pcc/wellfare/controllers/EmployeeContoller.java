@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping(value = "/employee")
 public class EmployeeContoller {
-	
+
 	@Autowired
 	private EmployeeRepository employeeRepository;
 	private final EmployeeService employeeService;
@@ -112,24 +112,12 @@ public class EmployeeContoller {
 	}
 
 	@GetMapping("/searchUser")
-	public Object search(
-			@RequestParam(required = false) Long empid,
-			@RequestParam(required = false) String tprefix,
-			@RequestParam(required = false) String name,
-			@RequestParam(required = false) String tposition,
-			@RequestParam(required = false) String deptcode,
-			@RequestParam(required = false) String remark,
-			@RequestParam(required = false) String status,
-			@RequestParam(required = false) String email) throws JsonProcessingException {
-		return employeeService.searchUser(
-				empid,
-				tprefix,
-				name,
-				tposition,
-				deptcode,
-				remark,
-				status,
-				email);
+	public Object search(@RequestParam(required = false) Long empid, @RequestParam(required = false) String tprefix,
+			@RequestParam(required = false) String name, @RequestParam(required = false) String tposition,
+			@RequestParam(required = false) String deptcode, @RequestParam(required = false) String remark,
+			@RequestParam(required = false) String status, @RequestParam(required = false) String email)
+			throws JsonProcessingException {
+		return employeeService.searchUser(empid, tprefix, name, tposition, deptcode, remark, status, email);
 	}
 
 	@PostMapping(value = "/uploadEmps", consumes = { "multipart/form-data" })
@@ -176,10 +164,21 @@ public class EmployeeContoller {
 		}
 	}
 
-	
-	@GetMapping("getIdByname")
-	public Optional<Long> getIdBytnameAndSname(@RequestParam String tname,@RequestParam String sname) {
-		return employeeRepository.findUserIdByTnameAndTsurname(tname, sname);
+	@GetMapping(value = "/seacrhUser/byEmpid")
+	public ResponseEntity<ApiResponse> generateAutoComplete(@RequestParam String empid) {
+		ApiResponse res = new ApiResponse();
+		ResponseData data = new ResponseData();
+
+		List<Employee> emps = employeeService.generateEmpidAutocomplete(empid);
+		data.setResult(emps);
+		res.setResponseMessage("Found");
+		res.setResponseData(data);
+		return ResponseEntity.ok(res);
+
 	}
 
+	@GetMapping("getIdByname")
+	public Optional<Long> getIdBytnameAndSname(@RequestParam String tname, @RequestParam String sname) {
+		return employeeRepository.findUserIdByTnameAndTsurname(tname, sname);
+	}
 }

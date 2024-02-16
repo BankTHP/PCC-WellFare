@@ -278,5 +278,9 @@ public class EmployeeService {
 	public List<Employee> findByTnameContainingOrTsurnameContaining(String fname, String Sname) {
 		return employeeRepository.findByTnameContainingOrTsurnameContaining(fname, Sname);
 	}
+	
+	public List<Employee> generateEmpidAutocomplete(String empid){
+		return employeeRepository.findByEmpidStartingWith(empid);
+	}
 
 }
