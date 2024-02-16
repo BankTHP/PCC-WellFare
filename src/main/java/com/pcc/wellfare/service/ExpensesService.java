@@ -198,6 +198,7 @@ public class ExpensesService {
         } else {
             System.out.println("Type ผิดเว้ย");
         }
+        Date date = new Date();
         Expenses expenses = Expenses
                 .builder()
                 .employee(employee)
@@ -208,7 +209,7 @@ public class ExpensesService {
                 .days(days)
                 .startDate(expensesRequest.getStartDate())
                 .endDate(expensesRequest.getEndDate())
-                .dateOfAdmission(new Date())
+                .dateOfAdmission(date)
                 .description(expensesRequest.getDescription())
                 .remark(expensesRequest.getRemark())
                 .build();
@@ -542,7 +543,7 @@ public class ExpensesService {
                 .days(expensesRequest.getDays())
                 .startDate(expensesRequest.getStartDate())
                 .endDate(expensesRequest.getEndDate())
-                .dateOfAdmission(expensesRequest.getAdMission())
+                .dateOfAdmission(new Date())
                 .description(expensesRequest.getDescription())
                 .remark(expensesRequest.getRemark())
                 .build();
