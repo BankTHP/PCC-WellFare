@@ -81,7 +81,7 @@ public class EmployeeService {
 		System.out.println(createEmployeeRequest.getLevel());
 		Optional<Budget> budgetOptional = budgetRepository.findByLevel(createEmployeeRequest.getLevel());
 		Budget budget = budgetOptional.orElseThrow(() -> new RuntimeException("Budget not found"));
-		Optional<Dept> deptOptional = deptRepository.findByCode(createEmployeeRequest.getCode());
+		Optional<Dept> deptOptional = deptRepository.findByCode(createEmployeeRequest.getDeptCode());
 		Dept dept = deptOptional.orElseThrow(() -> new RuntimeException("Dept not found"));
 		Employee employee = Employee.builder().empid(createEmployeeRequest.getEmpId()).dept(dept)
 				.tprefix(createEmployeeRequest.getTPrefix()).email(createEmployeeRequest.getEmail())

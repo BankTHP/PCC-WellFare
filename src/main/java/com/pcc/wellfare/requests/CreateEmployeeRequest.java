@@ -8,7 +8,7 @@ import lombok.Data;
 public class CreateEmployeeRequest {
 
 	String empId;
-    String code;
+    String deptCode;
     String deptId;
     String tPrefix;
     String tName;
