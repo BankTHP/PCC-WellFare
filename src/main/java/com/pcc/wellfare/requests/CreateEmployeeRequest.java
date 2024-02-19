@@ -9,7 +9,6 @@ public class CreateEmployeeRequest {
 
 	String empId;
     String deptCode;
-    String deptId;
     String tPrefix;
     String tName;
     String tSurname;
