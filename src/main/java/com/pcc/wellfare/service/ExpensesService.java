@@ -436,14 +436,23 @@ public class ExpensesService {
     public Object update(ExpensesRequest expensesRequest, Long expensesId) {
         Optional<Expenses> expensesOptional = expensesRepository.findById(expensesId);
         Expenses expenses = expensesOptional.orElseThrow(() -> new RuntimeException("Expenses not found"));
-    
+
         float perDay = budgetRepository.getPerDay(expenses.getEmployee().getUserId());
         float opdExpenses = (expensesRepository.getUseOpd(expenses.getEmployee().getUserId()) != null) ? expensesRepository.getUseOpd(expenses.getEmployee().getUserId()) : 0.0f;
         float ipdExpenses = (expensesRepository.getUseIpd(expenses.getEmployee().getUserId()) != null) ? expensesRepository.getUseIpd(expenses.getEmployee().getUserId()) : 0.0f;
-    
+
         float totalOpd = budgetRepository.getOpd(expenses.getEmployee().getUserId()) - opdExpenses;
         float totalIpd = budgetRepository.getIpd(expenses.getEmployee().getUserId()) - ipdExpenses;
-    
+
+        String oldTypeS = (expenses.getIpd() == 0) ? "opd" : "ipd";
+        float oldUse = expenses.getCanWithdraw();
+        if(oldTypeS.equals("opd")){
+            totalOpd = oldUse + totalOpd;
+        }
+        else{
+            totalIpd = oldUse + totalIpd;
+        }
+
         float withdrawOpd = expensesRequest.getOpd();
         float withdrawIpd = expensesRequest.getIpd();
         int days = expensesRequest.getDays();
@@ -452,7 +461,7 @@ public class ExpensesService {
         float calPerDay = roomService / days;
         float deduct = perDay * days;
         float canWithdraw = 0;
-    
+
         if (types.equals("opd")) {
             if (totalOpd == 0) {
                 return "เบิกได้ 0 บาท";
@@ -465,17 +474,13 @@ public class ExpensesService {
                     if (calPerDay > perDay) {
                         if (deduct > totalOpd) {
                             canWithdraw = withdrawOpd + totalOpd;
-                            totalOpd = 0;
                         } else {
-                            totalOpd = totalOpd - deduct;
                             canWithdraw = withdrawOpd + deduct;
                         }
                     } else {
                         if (totalOpd - roomService < 0) {
                             canWithdraw = canWithdraw + totalOpd;
-                            totalOpd = 0;
                         } else {
-                            totalOpd = totalOpd - roomService;
                             canWithdraw = withdrawOpd + roomService;
                         }
                     }
@@ -495,17 +500,13 @@ public class ExpensesService {
                     if (calPerDay > perDay) {
                         if (deduct > totalIpd) {
                             canWithdraw = withdrawIpd + totalIpd;
-                            totalIpd = 0;
                         } else {
-                            totalIpd = totalIpd - deduct;
                             canWithdraw = withdrawIpd + deduct;
                         }
                     } else {
                         if (totalIpd - roomService < 0) {
                             canWithdraw = canWithdraw + totalIpd;
-                            totalIpd = 0;
                         } else {
-                            totalIpd = totalIpd - roomService;
                             canWithdraw = withdrawIpd + roomService;
                         }
                     }
@@ -542,8 +543,8 @@ public class ExpensesService {
         //roomService can withdraw
         float roomServiceCanUse = (roomServiceRequest >= roomServiceLimit) ? roomServiceLimit : roomServiceRequest;
         //get MAXLimit of OPD and IPD
-        float ipdMaxLimit = budgetRepository.getIPDlimit(userId);
-        float opdMaxLimit = budgetRepository.getOPDlimit(userId);
+        float ipdMaxLimit = budgetRepository.getIpdLimit(userId);
+        float opdMaxLimit = budgetRepository.getOpdLimit(userId);
         //get Used OPD and IPD
         float usedOpd = (expensesRepository.getUseOpd(userId) != null) ? expensesRepository.getUseOpd(userId) : 0.0f;
         float usedIpd = (expensesRepository.getUseIpd(userId) != null) ? expensesRepository.getUseIpd(userId) : 0.0f;
@@ -557,6 +558,9 @@ public class ExpensesService {
         //Sum all cost request
         float healthCost = healthCostRequest + roomServiceCanUse;
         float canWithdraw = 0.0f;
+        if(healthCostLimit <= 0){
+            return "คงเบิกได้ 0 บาท";
+        }
         if(healthCostLimit >= healthCost) {
             canWithdraw = healthCost;
         }else {
@@ -581,8 +585,8 @@ public class ExpensesService {
     
     public Map<String, Double> getTotalExpense(Long uid) {
         //get MAXLimit of OPD and IPD
-        float ipdMaxLimit = budgetRepository.getIPDlimit(uid);
-        float opdMaxLimit = budgetRepository.getOPDlimit(uid);
+        float ipdMaxLimit = budgetRepository.getIpdLimit(uid);
+        float opdMaxLimit = budgetRepository.getIpdLimit(uid);
         //useed OPD and IPD
         float usedOpd = (expensesRepository.getUseOpd(uid) != null) ? expensesRepository.getUseOpd(uid) : 0.0f;
         float usedIpd = (expensesRepository.getUseIpd(uid) != null) ? expensesRepository.getUseIpd(uid) : 0.0f;
