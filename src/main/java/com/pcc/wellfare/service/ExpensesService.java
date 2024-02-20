@@ -601,7 +601,10 @@ public class ExpensesService {
 
         return responseData;
     }
-
+    
+    public Optional<Expenses> getExpenseById(Long id) {
+    	return expensesRepository.findById(id);
+    }
 }
 
 
