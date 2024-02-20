@@ -15,6 +15,5 @@ public class CreateEmployeeRequest {
     String tPosition;
     String level;
     String remark;
-    String status;
     String email;
 }

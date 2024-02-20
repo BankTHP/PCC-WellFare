@@ -85,6 +85,7 @@ public class EmployeeService {
 		Dept dept = deptOptional.orElseThrow(() -> new RuntimeException("Dept not found"));
 		Employee employee = Employee
 				.builder()
+				.startDate(new Date())
 				.empid(createEmployeeRequest.getEmpId()).dept(dept)
 				.tprefix(createEmployeeRequest.getTPrefix())
 				.email(createEmployeeRequest.getEmail())
@@ -93,7 +94,7 @@ public class EmployeeService {
 				.tposition(createEmployeeRequest.getTPosition())
 				.budget(budget)
 				.remark(createEmployeeRequest.getRemark())
-				.status(createEmployeeRequest.getStatus())
+				.status(getStatusCode(createEmployeeRequest.getRemark()))
 				.build();
 
 		return employeeRepository.save(employee);
@@ -128,9 +129,9 @@ public class EmployeeService {
 	}
 
 	private String getStatusCode(String type) {
-		if (type == "พนักงานประจำ") {
+		if (type.equals("พนักงานประจำ")) {
 			return "1";
-		} else if (type == "สัญญาจ้าง") {
+		} else if (type.equals("สัญญาจ้าง")) {
 			return "2";
 		} else {
 			return "3";
