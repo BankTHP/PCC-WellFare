@@ -9,11 +9,9 @@ import com.pcc.wellfare.repository.ExpensesRepository;
 
 import com.pcc.wellfare.requests.ExpensesRequest;
 
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import jakarta.persistence.EntityManager;
-
 
 import org.springframework.stereotype.Service;
 
@@ -27,23 +25,20 @@ public class ExpensesService {
     private final EntityManager entityManager;
     private final EmployeeRepository employeeRepository;
 
-
-
-
-
-    public ExpensesService(ExpensesRepository expensesRepository, BudgetRepository budgetRepository, EmployeeRepository employeeRepository,EntityManager entityManager) {
+    public ExpensesService(ExpensesRepository expensesRepository, BudgetRepository budgetRepository,
+            EmployeeRepository employeeRepository, EntityManager entityManager) {
         this.expensesRepository = expensesRepository;
         this.budgetRepository = budgetRepository;
         this.employeeRepository = employeeRepository;
         this.entityManager = entityManager;
     }
-    
+
     public List<Expenses> findAllExpensesWithDateOfAdmissionNotNull() {
         return expensesRepository.findByDateOfAdmissionIsNotNull();
     }
-    
+
     public Optional<Expenses> findbyid(Long id) {
-    	return expensesRepository.findById(id);
+        return expensesRepository.findById(id);
     }
 
     private double parseDoubleWithComma(String value) {
@@ -54,7 +49,7 @@ public class ExpensesService {
     public Map<String, Double> getTotal(Long userId) {
         List<Object[]> useBudget = expensesRepository.getUse(userId);
         List<Object[]> canUseBudget = budgetRepository.getCanUse(userId);
-//        const RoomService = emp.file
+        // const RoomService = emp.file
         if (canUseBudget.isEmpty()) {
             throw new RuntimeException("Can Use Budget is empty");
         } else {
@@ -91,35 +86,30 @@ public class ExpensesService {
         }
     }
 
-
-
     public Object getExpenses(Long userId) {
-        List<Object[]> useBudget = expensesRepository.getUse(userId);
-
-        if (useBudget.isEmpty()) {
+        float totalOpd = (expensesRepository.getUseOpd(userId) != null) ? expensesRepository.getUseOpd(userId) : 0.0f;
+        float totalIpd = (expensesRepository.getUseIpd(userId) != null) ? expensesRepository.getUseIpd(userId) : 0.0f;
+        if (totalOpd<=0 && totalIpd<=0) {
             return "ยังไม่มีการเบิกในระบบ";
         } else {
-            Object[] use = useBudget.get(0);
+           
 
-            double useOpd = parseDoubleWithComma(use[0].toString());
-            double useIpd = parseDoubleWithComma(use[1].toString());
-
-
-            Map<String, Double> result = new HashMap<>();
-            result.put("opd", useOpd);
-            result.put("ipd", useIpd);
+            Map<String, Float> result = new HashMap<>();
+            result.put("opd", totalOpd);
+            result.put("ipd", totalIpd);
             return result;
         }
     }
-
 
     public Object create(ExpensesRequest expensesRequest, Long userId) {
         Optional<Employee> employeeOptional = employeeRepository.findById(userId);
         Employee employee = employeeOptional.orElseThrow(() -> new RuntimeException("Employee not found"));
 
         float perDay = budgetRepository.getPerDay(userId);
-        float opdExpenses = (expensesRepository.getUseOpd(userId) != null) ? expensesRepository.getUseOpd(userId) : 0.0f;
-        float ipdExpenses = (expensesRepository.getUseIpd(userId) != null) ? expensesRepository.getUseIpd(userId) : 0.0f;
+        float opdExpenses = (expensesRepository.getUseOpd(userId) != null) ? expensesRepository.getUseOpd(userId)
+                : 0.0f;
+        float ipdExpenses = (expensesRepository.getUseIpd(userId) != null) ? expensesRepository.getUseIpd(userId)
+                : 0.0f;
 
         float totalOpd = budgetRepository.getOpd(userId) - opdExpenses;
         float totalIpd = budgetRepository.getIpd(userId) - ipdExpenses;
@@ -133,7 +123,6 @@ public class ExpensesService {
         float deduct = perDay * days;
         float canWithdraw = 0;
 
-
         if (types.equals("opd")) {
             if (totalOpd == 0) {
                 return "เบิกได้ 0 บาท";
@@ -145,18 +134,14 @@ public class ExpensesService {
                 } else {
                     if (calPerDay > perDay) {
                         if (deduct > totalOpd) {
-                            canWithdraw = withdrawOpd+totalOpd;
-                            totalOpd = 0;
+                            canWithdraw = withdrawOpd + totalOpd;
                         } else {
-                            totalOpd = totalOpd - deduct;
-                            canWithdraw = withdrawOpd+deduct;
+                            canWithdraw = withdrawOpd + deduct;
                         }
                     } else {
                         if (totalOpd - roomService < 0) {
-                            canWithdraw =  canWithdraw + totalOpd;
-                            totalOpd = 0;
+                            canWithdraw = canWithdraw + totalOpd;
                         } else {
-                            totalOpd = totalOpd - roomService;
                             canWithdraw = withdrawOpd + roomService;
                         }
                     }
@@ -175,18 +160,14 @@ public class ExpensesService {
                 } else {
                     if (calPerDay > perDay) {
                         if (deduct > totalIpd) {
-                            canWithdraw = withdrawIpd+totalIpd;
-                            totalIpd = 0;
+                            canWithdraw = withdrawIpd + totalIpd;
                         } else {
-                            totalIpd = totalIpd - deduct;
-                            canWithdraw = withdrawIpd+deduct;
+                            canWithdraw = withdrawIpd + deduct;
                         }
                     } else {
                         if (totalIpd - roomService < 0) {
-                            canWithdraw =  canWithdraw + totalIpd;
-                            totalIpd = 0;
+                            canWithdraw = canWithdraw + totalIpd;
                         } else {
-                            totalIpd = totalIpd - roomService;
                             canWithdraw = withdrawIpd + roomService;
                         }
                     }
@@ -194,11 +175,14 @@ public class ExpensesService {
             } else {
                 canWithdraw = totalIpd;
             }
-
         } else {
-            System.out.println("Type ผิดเว้ย");
-        }
-        Date date = new Date();
+            return "Type ผิดเว้ย";
+        } if (canWithdraw == 0)  {
+            return "ไม่มียอด";
+         } else {
+   
+
+        // สร้างวัตถุ Expenses และบันทึกลงในฐานข้อมูล
         Expenses expenses = Expenses
                 .builder()
                 .employee(employee)
@@ -209,175 +193,179 @@ public class ExpensesService {
                 .days(days)
                 .startDate(expensesRequest.getStartDate())
                 .endDate(expensesRequest.getEndDate())
-                .dateOfAdmission(date)
+                .dateOfAdmission(new Date())
                 .description(expensesRequest.getDescription())
                 .remark(expensesRequest.getRemark())
                 .build();
-
         return expensesRepository.save(expenses);
+     }
     }
-    
+
     public Page<Expenses> getAllExpenseByPage(Pageable pageeble) {
-		return expensesRepository.findAll(pageeble);
-	}
-    
-    public Page<Expenses> getExpensesByName(Pageable pageable,String name){
-    	Long uid = 0l;
-    	String[] names = name.split("\\s+", 2);
-    	String fname = names[0];
-    	String surname = names[1];
-		Optional<Long> userIdOptional = employeeRepository.findUserIdByTnameAndTsurname(fname, surname);
-		uid = userIdOptional.orElse(0L);
-		if (uid != 0L) {
-            return expensesRepository.findAllByEmployeeUserId(uid, pageable);
-        } else {
-            return Page.empty();
-        }
+        return expensesRepository.findAll(pageeble);
     }
-    
-    public Page<Expenses> getExpenseByEmpCode(Pageable pageable,String code){
-    	Long uid = 0l;
-    	Optional<Long> userIdOptional = employeeRepository.findUserIdByEmpid(code);
-    	uid = userIdOptional.orElse(0L);
+
+    public Page<Expenses> getExpensesByName(Pageable pageable, String name) {
+        Long uid = 0l;
+        String[] names = name.split("\\s+", 2);
+        String fname = names[0];
+        String surname = names[1];
+        Optional<Long> userIdOptional = employeeRepository.findUserIdByTnameAndTsurname(fname, surname);
+        uid = userIdOptional.orElse(0L);
         if (uid != 0L) {
             return expensesRepository.findAllByEmployeeUserId(uid, pageable);
         } else {
             return Page.empty();
         }
     }
-    
-    public Page<Expenses> getAllExpenseByFilter(Pageable pageeble, String type, String value){
-		Long userId = 0l;
-    	if(type == "name") {
-    		String[] names = value.split("\\s+", 2);
-			String name = names[0];
-			String surname = names[1];
-	    	System.out.println(name);
-	    	System.out.println(surname);
-			Optional<Long> userIdOptional = employeeRepository.findUserIdByTnameAndTsurname(name, surname);
-	        userId = userIdOptional.orElse(0L);
-		}else if(type == "code"){
-			String code = value;
-			Optional<Long> userIdOptional = employeeRepository.findUserIdByEmpid(code);
-	        userId = userIdOptional.orElse(0L);
-		}
-    	System.out.println(userId);
-    	System.out.println(value);
-    	System.out.println(type);
-    	if (userId != 0L) {
+
+    public Page<Expenses> getExpenseByEmpCode(Pageable pageable, String code) {
+        Long uid = 0l;
+        Optional<Long> userIdOptional = employeeRepository.findUserIdByEmpid(code);
+        uid = userIdOptional.orElse(0L);
+        if (uid != 0L) {
+            return expensesRepository.findAllByEmployeeUserId(uid, pageable);
+        } else {
+            return Page.empty();
+        }
+    }
+
+    public Page<Expenses> getAllExpenseByFilter(Pageable pageeble, String type, String value) {
+        Long userId = 0l;
+        if (type == "name") {
+            String[] names = value.split("\\s+", 2);
+            String name = names[0];
+            String surname = names[1];
+            System.out.println(name);
+            System.out.println(surname);
+            Optional<Long> userIdOptional = employeeRepository.findUserIdByTnameAndTsurname(name, surname);
+            userId = userIdOptional.orElse(0L);
+        } else if (type == "code") {
+            String code = value;
+            Optional<Long> userIdOptional = employeeRepository.findUserIdByEmpid(code);
+            userId = userIdOptional.orElse(0L);
+        }
+        System.out.println(userId);
+        System.out.println(value);
+        System.out.println(type);
+        if (userId != 0L) {
             return expensesRepository.findAllByEmployeeUserId(userId, pageeble);
         } else {
             return Page.empty();
         }
-    	
+
     }
 
-    // public Object update(ExpensesRequest expensesRequest, Long userId, Long expensesId) {
-    //     Optional<Expenses> expensesOptional = expensesRepository.findById(expensesId);
-    //     Expenses expenses = expensesOptional.orElseThrow(() -> new RuntimeException("Expenses not found"));
-    
-    //     Optional<Employee> employeeOptional = employeeRepository.findById(userId);
-    //     Employee employee = employeeOptional.orElseThrow(() -> new RuntimeException("Employee not found"));
-    
-    //     float perDay = budgetRepository.getPerDay(userId);
-    //     float opdExpenses = (expensesRepository.getUseOpd(userId) != null) ? expensesRepository.getUseOpd(userId) : 0.0f;
-    //     float ipdExpenses = (expensesRepository.getUseIpd(userId) != null) ? expensesRepository.getUseIpd(userId) : 0.0f;
-    
-    //     float totalOpd = budgetRepository.getOpd(userId) - opdExpenses;
-    //     float totalIpd = budgetRepository.getIpd(userId) - ipdExpenses;
-    
-    //     float withdrawOpd = expensesRequest.getOpd();
-    //     float withdrawIpd = expensesRequest.getIpd();
-    //     int days = expensesRequest.getDays();
-    //     float roomService = expensesRequest.getRoomService();
-    //     String types = expensesRequest.getTypes();
-    //     float calPerDay = roomService / days;
-    //     float deduct = perDay * days;
-    //     float canWithdraw = 0;
-    
-    //     if (types.equals("opd")) {
-    //         if (totalOpd == 0) {
-    //             return "เบิกได้ 0 บาท";
-    //         } else if (totalOpd >= withdrawOpd) {
-    //             totalOpd = totalOpd - withdrawOpd;
-    //             canWithdraw = withdrawOpd;
-    //             if (totalOpd == 0) {
-    //                 return canWithdraw;
-    //             } else {
-    //                 if (calPerDay > perDay) {
-    //                     if (deduct > totalOpd) {
-    //                         canWithdraw = withdrawOpd + totalOpd;
-    //                         totalOpd = 0;
-    //                     } else {
-    //                         totalOpd = totalOpd - deduct;
-    //                         canWithdraw = withdrawOpd + deduct;
-    //                     }
-    //                 } else {
-    //                     if (totalOpd - roomService < 0) {
-    //                         canWithdraw = canWithdraw + totalOpd;
-    //                         totalOpd = 0;
-    //                     } else {
-    //                         totalOpd = totalOpd - roomService;
-    //                         canWithdraw = withdrawOpd + roomService;
-    //                     }
-    //                 }
-    //             }
-    //         } else {
-    //             canWithdraw = totalOpd;
-    //         }
-    //     } else if (types.equals("ipd")) {
-    //         if (totalIpd == 0) {
-    //             return "เบิกได้ 0 บาท";
-    //         } else if (totalIpd >= withdrawIpd) {
-    //             totalIpd = totalIpd - withdrawIpd;
-    //             canWithdraw = withdrawIpd;
-    //             if (totalIpd == 0) {
-    //                 return canWithdraw;
-    //             } else {
-    //                 if (calPerDay > perDay) {
-    //                     if (deduct > totalIpd) {
-    //                         canWithdraw = withdrawIpd + totalIpd;
-    //                         totalIpd = 0;
-    //                     } else {
-    //                         totalIpd = totalIpd - deduct;
-    //                         canWithdraw = withdrawIpd + deduct;
-    //                     }
-    //                 } else {
-    //                     if (totalIpd - roomService < 0) {
-    //                         canWithdraw = canWithdraw + totalIpd;
-    //                         totalIpd = 0;
-    //                     } else {
-    //                         totalIpd = totalIpd - roomService;
-    //                         canWithdraw = withdrawIpd + roomService;
-    //                     }
-    //                 }
-    //             }
-    //         } else {
-    //             canWithdraw = totalIpd;
-    //         }
-    //     } else {
-    //         System.out.println("Type ผิดเว้ย");
-    //     }
-    
-    //     // อัพเดทค่าใน object Expenses ตามที่ต้องการ
-    //     expenses.setEmployee(employee);
-    //     expenses.setIpd(withdrawIpd);
-    //     expenses.setOpd(withdrawOpd);
-    //     expenses.setRoomService(roomService);
-    //     expenses.setCanWithdraw(canWithdraw);
-    //     expenses.setDays(days);
-    //     expenses.setStartDate(expensesRequest.getStartDate());
-    //     expenses.setEndDate(expensesRequest.getEndDate());
-    //     expenses.setDateOfAdmission(expensesRequest.getAdMission());
-    //     expenses.setDescription(expensesRequest.getDescription());
-    //     expenses.setRemark(expensesRequest.getRemark());
-    
-    //     return expensesRepository.save(expenses);
-    // }
-    
-    
+    // public Object update(ExpensesRequest expensesRequest, Long userId, Long
+    // expensesId) {
+    // Optional<Expenses> expensesOptional =
+    // expensesRepository.findById(expensesId);
+    // Expenses expenses = expensesOptional.orElseThrow(() -> new
+    // RuntimeException("Expenses not found"));
 
-        public List<Expenses> getExpensesByUserId(Long userId) {
+    // Optional<Employee> employeeOptional = employeeRepository.findById(userId);
+    // Employee employee = employeeOptional.orElseThrow(() -> new
+    // RuntimeException("Employee not found"));
+
+    // float perDay = budgetRepository.getPerDay(userId);
+    // float opdExpenses = (expensesRepository.getUseOpd(userId) != null) ?
+    // expensesRepository.getUseOpd(userId) : 0.0f;
+    // float ipdExpenses = (expensesRepository.getUseIpd(userId) != null) ?
+    // expensesRepository.getUseIpd(userId) : 0.0f;
+
+    // float totalOpd = budgetRepository.getOpd(userId) - opdExpenses;
+    // float totalIpd = budgetRepository.getIpd(userId) - ipdExpenses;
+
+    // float withdrawOpd = expensesRequest.getOpd();
+    // float withdrawIpd = expensesRequest.getIpd();
+    // int days = expensesRequest.getDays();
+    // float roomService = expensesRequest.getRoomService();
+    // String types = expensesRequest.getTypes();
+    // float calPerDay = roomService / days;
+    // float deduct = perDay * days;
+    // float canWithdraw = 0;
+
+    // if (types.equals("opd")) {
+    // if (totalOpd == 0) {
+    // return "เบิกได้ 0 บาท";
+    // } else if (totalOpd >= withdrawOpd) {
+    // totalOpd = totalOpd - withdrawOpd;
+    // canWithdraw = withdrawOpd;
+    // if (totalOpd == 0) {
+    // return canWithdraw;
+    // } else {
+    // if (calPerDay > perDay) {
+    // if (deduct > totalOpd) {
+    // canWithdraw = withdrawOpd + totalOpd;
+    // totalOpd = 0;
+    // } else {
+    // totalOpd = totalOpd - deduct;
+    // canWithdraw = withdrawOpd + deduct;
+    // }
+    // } else {
+    // if (totalOpd - roomService < 0) {
+    // canWithdraw = canWithdraw + totalOpd;
+    // totalOpd = 0;
+    // } else {
+    // totalOpd = totalOpd - roomService;
+    // canWithdraw = withdrawOpd + roomService;
+    // }
+    // }
+    // }
+    // } else {
+    // canWithdraw = totalOpd;
+    // }
+    // } else if (types.equals("ipd")) {
+    // if (totalIpd == 0) {
+    // return "เบิกได้ 0 บาท";
+    // } else if (totalIpd >= withdrawIpd) {
+    // totalIpd = totalIpd - withdrawIpd;
+    // canWithdraw = withdrawIpd;
+    // if (totalIpd == 0) {
+    // return canWithdraw;
+    // } else {
+    // if (calPerDay > perDay) {
+    // if (deduct > totalIpd) {
+    // canWithdraw = withdrawIpd + totalIpd;
+    // totalIpd = 0;
+    // } else {
+    // totalIpd = totalIpd - deduct;
+    // canWithdraw = withdrawIpd + deduct;
+    // }
+    // } else {
+    // if (totalIpd - roomService < 0) {
+    // canWithdraw = canWithdraw + totalIpd;
+    // totalIpd = 0;
+    // } else {
+    // totalIpd = totalIpd - roomService;
+    // canWithdraw = withdrawIpd + roomService;
+    // }
+    // }
+    // }
+    // } else {
+    // canWithdraw = totalIpd;
+    // }
+    // } else {
+    // System.out.println("Type ผิดเว้ย");
+    // }
+
+    // // อัพเดทค่าใน object Expenses ตามที่ต้องการ
+    // expenses.setEmployee(employee);
+    // expenses.setIpd(withdrawIpd);
+    // expenses.setOpd(withdrawOpd);
+    // expenses.setRoomService(roomService);
+    // expenses.setCanWithdraw(canWithdraw);
+    // expenses.setDays(days);
+    // expenses.setStartDate(expensesRequest.getStartDate());
+    // expenses.setEndDate(expensesRequest.getEndDate());
+    // expenses.setDateOfAdmission(expensesRequest.getAdMission());
+    // expenses.setDescription(expensesRequest.getDescription());
+    // expenses.setRemark(expensesRequest.getRemark());
+
+    // return expensesRepository.save(expenses);
+    // }
+
+    public List<Expenses> getExpensesByUserId(Long userId) {
         return expensesRepository.findByEmployeeUserId(userId);
     }
 
@@ -387,7 +375,8 @@ public class ExpensesService {
 
     public Map<String, Object> getExpensesById(Long userId) {
         String jpql = "SELECT e.user_id, e.\"e-mail\", e.empid, e.remark, e.status, e.tname, e.tposition, " +
-                "e.tprefix, e.tsurname, e.budget_id, e.dept_code, e2.id, e2.can_withdraw, e2.date_of_admission, e2.days, " +
+                "e.tprefix, e.tsurname, e.budget_id, e.dept_code, e2.id, e2.can_withdraw, e2.date_of_admission, e2.days, "
+                +
                 "e2.description, e2.end_date, e2.ipd, e2.opd, e2.remark, e2.room_service, e2.start_date " +
                 "FROM employee e JOIN expenses e2 ON e2.user_id = e.user_id WHERE e.user_id = :id";
 
@@ -438,18 +427,21 @@ public class ExpensesService {
         Expenses expenses = expensesOptional.orElseThrow(() -> new RuntimeException("Expenses not found"));
 
         float perDay = budgetRepository.getPerDay(expenses.getEmployee().getUserId());
-        float opdExpenses = (expensesRepository.getUseOpd(expenses.getEmployee().getUserId()) != null) ? expensesRepository.getUseOpd(expenses.getEmployee().getUserId()) : 0.0f;
-        float ipdExpenses = (expensesRepository.getUseIpd(expenses.getEmployee().getUserId()) != null) ? expensesRepository.getUseIpd(expenses.getEmployee().getUserId()) : 0.0f;
+        float opdExpenses = (expensesRepository.getUseOpd(expenses.getEmployee().getUserId()) != null)
+                ? expensesRepository.getUseOpd(expenses.getEmployee().getUserId())
+                : 0.0f;
+        float ipdExpenses = (expensesRepository.getUseIpd(expenses.getEmployee().getUserId()) != null)
+                ? expensesRepository.getUseIpd(expenses.getEmployee().getUserId())
+                : 0.0f;
 
         float totalOpd = budgetRepository.getOpd(expenses.getEmployee().getUserId()) - opdExpenses;
         float totalIpd = budgetRepository.getIpd(expenses.getEmployee().getUserId()) - ipdExpenses;
 
         String oldTypeS = (expenses.getIpd() == 0) ? "opd" : "ipd";
         float oldUse = expenses.getCanWithdraw();
-        if(oldTypeS.equals("opd")){
+        if (oldTypeS.equals("opd")) {
             totalOpd = oldUse + totalOpd;
-        }
-        else{
+        } else {
             totalIpd = oldUse + totalIpd;
         }
 
@@ -517,7 +509,7 @@ public class ExpensesService {
         } else {
             System.out.println("Type ผิดเว้ย");
         }
-    
+
         // อัพเดทค่าใน object Expenses ตามที่ต้องการ
         expenses.setIpd(withdrawIpd);
         expenses.setOpd(withdrawOpd);
@@ -529,10 +521,10 @@ public class ExpensesService {
         expenses.setDateOfAdmission(expensesRequest.getAdMission());
         expenses.setDescription(expensesRequest.getDescription());
         expenses.setRemark(expensesRequest.getRemark());
-    
+
         return expensesRepository.save(expenses);
     }
-    
+
     public Object withDraw(ExpensesRequest expensesRequest, Long userId) {
         Optional<Employee> employeeOptional = employeeRepository.findById(userId);
         Employee employee = employeeOptional.orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -540,33 +532,33 @@ public class ExpensesService {
         float perDay = budgetRepository.getPerDay(userId);
         float roomServiceLimit = perDay * expensesRequest.getDays();
         float roomServiceRequest = expensesRequest.getRoomService();
-        //roomService can withdraw
+        // roomService can withdraw
         float roomServiceCanUse = (roomServiceRequest >= roomServiceLimit) ? roomServiceLimit : roomServiceRequest;
-        //get MAXLimit of OPD and IPD
+        // get MAXLimit of OPD and IPD
         float ipdMaxLimit = budgetRepository.getIpdLimit(userId);
         float opdMaxLimit = budgetRepository.getOpdLimit(userId);
-        //get Used OPD and IPD
+        // get Used OPD and IPD
         float usedOpd = (expensesRepository.getUseOpd(userId) != null) ? expensesRepository.getUseOpd(userId) : 0.0f;
         float usedIpd = (expensesRepository.getUseIpd(userId) != null) ? expensesRepository.getUseIpd(userId) : 0.0f;
-        //calculate for defined Limit can Withdraw expense
+        // calculate for defined Limit can Withdraw expense
         float ipdLimit = ipdMaxLimit - usedIpd;
         float opdLimit = opdMaxLimit - usedOpd;
-        //health cost request select by type
+        // health cost request select by type
         float healthCostRequest = (type1.equals("ipd")) ? expensesRequest.getIpd() : expensesRequest.getOpd();
-        //get health cost limit by type
+        // get health cost limit by type
         float healthCostLimit = (type1.equals("ipd")) ? ipdLimit : opdLimit;
-        //Sum all cost request
+        // Sum all cost request
         float healthCost = healthCostRequest + roomServiceCanUse;
         float canWithdraw = 0.0f;
-        if(healthCostLimit <= 0){
+        if (healthCostLimit <= 0) {
             return "คงเบิกได้ 0 บาท";
         }
-        if(healthCostLimit >= healthCost) {
+        if (healthCostLimit >= healthCost) {
             canWithdraw = healthCost;
-        }else {
+        } else {
             canWithdraw = healthCostLimit;
         }
-        
+
         Expenses expense = Expenses.builder()
                 .employee(employee)
                 .ipd(expensesRequest.getIpd())
@@ -582,17 +574,27 @@ public class ExpensesService {
                 .build();
         return expensesRepository.save(expense);
     }
-    
+
     public Map<String, Double> getTotalExpense(Long uid) {
-        //get MAXLimit of OPD and IPD
+        // get MAXLimit of OPD and IPD
         float ipdMaxLimit = budgetRepository.getIpdLimit(uid);
+        System.out.println("ipdMaxLimit "+ipdMaxLimit);
         float opdMaxLimit = budgetRepository.getOpdLimit(uid);
-        //useed OPD and IPD
+        System.out.println("opdMaxLimit " + opdMaxLimit);
+
+        // useed OPD and IPD
         float usedOpd = (expensesRepository.getUseOpd(uid) != null) ? expensesRepository.getUseOpd(uid) : 0.0f;
+        System.out.println("usedOpd"+usedOpd);
+        
         float usedIpd = (expensesRepository.getUseIpd(uid) != null) ? expensesRepository.getUseIpd(uid) : 0.0f;
-        //remain
+        System.out.println("usedIpd"+ usedIpd);
+
         float opdRemain = opdMaxLimit - usedOpd;
+        System.out.println("opdRemain"+ opdRemain);
+
         float ipdRemain = ipdMaxLimit - usedIpd;
+        System.out.println("ipdRemain"+ ipdRemain);
+
         float roomService = budgetRepository.getPerDay(uid);
         Map<String, Double> responseData = new HashMap<>();
         responseData.put("opd", (double) opdRemain);
@@ -601,10 +603,9 @@ public class ExpensesService {
 
         return responseData;
     }
-    
+
     public Optional<Expenses> getExpenseById(Long id) {
-    	return expensesRepository.findById(id);
+        return expensesRepository.findById(id);
     }
+
 }
-
-

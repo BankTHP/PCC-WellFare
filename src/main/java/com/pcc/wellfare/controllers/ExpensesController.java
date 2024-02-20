@@ -69,7 +69,7 @@ public class ExpensesController {
 		ApiResponse response = new ApiResponse();
 		ResponseData data = new ResponseData();
 		try {
-			Object expenses = expensesService.withDraw(expensesRequest, userId);
+			Object expenses = expensesService.create(expensesRequest, userId);
 			data.setResult(expenses);
 			response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
 			response.setResponseData(data);
@@ -238,27 +238,27 @@ public class ExpensesController {
 //        }
 //        return expensesService.getAllExpenseByFilter(pageable,searchType,searchValue);
 	}
-	
+
 	@GetMapping(value = "/getExpense/{id}")
-	ResponseEntity<ApiResponse> getExpenseById(@PathVariable Long id) {
-		ApiResponse response = new ApiResponse();
-		ResponseData data = new ResponseData();
-		try {
-			Optional<Expenses> expense = expensesService.getExpenseById(id);
-			if(expense.isPresent()) {
-				data.setResult(expense);
-				response.setResponseMessage("สำเร็จ");
-				response.setResponseData(data);
-				return ResponseEntity.ok().body(response);
-			}
-			else {
-				response.setResponseMessage("ไม่พบข้อมูลที่ต้องการ");
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-			}
-		} catch (Exception e) {
-			response.setResponseMessage("เกิดข้อผิดพลาด");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
-	}
+    ResponseEntity<ApiResponse> getExpenseById(@PathVariable Long id) {
+        ApiResponse response = new ApiResponse();
+        ResponseData data = new ResponseData();
+        try {
+            Optional<Expenses> expense = expensesService.getExpenseById(id);
+            if(expense.isPresent()) {
+                data.setResult(expense);
+                response.setResponseMessage("สำเร็จ");
+                response.setResponseData(data);
+                return ResponseEntity.ok().body(response);
+            }
+            else {
+                response.setResponseMessage("ไม่พบข้อมูลที่ต้องการ");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            response.setResponseMessage("เกิดข้อผิดพลาด");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
 }

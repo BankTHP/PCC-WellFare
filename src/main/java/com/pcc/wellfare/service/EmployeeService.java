@@ -83,11 +83,19 @@ public class EmployeeService {
 		Budget budget = budgetOptional.orElseThrow(() -> new RuntimeException("Budget not found"));
 		Optional<Dept> deptOptional = deptRepository.findByCode(createEmployeeRequest.getDeptCode());
 		Dept dept = deptOptional.orElseThrow(() -> new RuntimeException("Dept not found"));
-		Employee employee = Employee.builder().empid(createEmployeeRequest.getEmpId()).dept(dept)
-				.tprefix(createEmployeeRequest.getTPrefix()).email(createEmployeeRequest.getEmail())
-				.tname(createEmployeeRequest.getTName()).tsurname(createEmployeeRequest.getTSurname())
-				.tposition(createEmployeeRequest.getTPosition()).budget(budget)
-				.remark(createEmployeeRequest.getRemark()).status(createEmployeeRequest.getStatus()).build();
+		Employee employee = Employee
+				.builder()
+				.startDate(new Date())
+				.empid(createEmployeeRequest.getEmpId()).dept(dept)
+				.tprefix(createEmployeeRequest.getTPrefix())
+				.email(createEmployeeRequest.getEmail())
+				.tname(createEmployeeRequest.getTName())
+				.tsurname(createEmployeeRequest.getTSurname())
+				.tposition(createEmployeeRequest.getTPosition())
+				.budget(budget)
+				.remark(createEmployeeRequest.getRemark())
+				.status(getStatusCode(createEmployeeRequest.getRemark()))
+				.build();
 
 		return employeeRepository.save(employee);
 	}
@@ -121,9 +129,9 @@ public class EmployeeService {
 	}
 
 	private String getStatusCode(String type) {
-		if (type == "พนักงานประจำ") {
+		if (type.equals("พนักงานประจำ")) {
 			return "1";
-		} else if (type == "สัญญาจ้าง") {
+		} else if (type.equals("สัญญาจ้าง")) {
 			return "2";
 		} else {
 			return "3";
