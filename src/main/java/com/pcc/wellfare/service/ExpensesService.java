@@ -586,7 +586,7 @@ public class ExpensesService {
     public Map<String, Double> getTotalExpense(Long uid) {
         //get MAXLimit of OPD and IPD
         float ipdMaxLimit = budgetRepository.getIpdLimit(uid);
-        float opdMaxLimit = budgetRepository.getIpdLimit(uid);
+        float opdMaxLimit = budgetRepository.getOpdLimit(uid);
         //useed OPD and IPD
         float usedOpd = (expensesRepository.getUseOpd(uid) != null) ? expensesRepository.getUseOpd(uid) : 0.0f;
         float usedIpd = (expensesRepository.getUseIpd(uid) != null) ? expensesRepository.getUseIpd(uid) : 0.0f;
