@@ -83,11 +83,18 @@ public class EmployeeService {
 		Budget budget = budgetOptional.orElseThrow(() -> new RuntimeException("Budget not found"));
 		Optional<Dept> deptOptional = deptRepository.findByCode(createEmployeeRequest.getDeptCode());
 		Dept dept = deptOptional.orElseThrow(() -> new RuntimeException("Dept not found"));
-		Employee employee = Employee.builder().empid(createEmployeeRequest.getEmpId()).dept(dept)
-				.tprefix(createEmployeeRequest.getTPrefix()).email(createEmployeeRequest.getEmail())
-				.tname(createEmployeeRequest.getTName()).tsurname(createEmployeeRequest.getTSurname())
-				.tposition(createEmployeeRequest.getTPosition()).budget(budget)
-				.remark(createEmployeeRequest.getRemark()).status(createEmployeeRequest.getStatus()).build();
+		Employee employee = Employee
+				.builder()
+				.empid(createEmployeeRequest.getEmpId()).dept(dept)
+				.tprefix(createEmployeeRequest.getTPrefix())
+				.email(createEmployeeRequest.getEmail())
+				.tname(createEmployeeRequest.getTName())
+				.tsurname(createEmployeeRequest.getTSurname())
+				.tposition(createEmployeeRequest.getTPosition())
+				.budget(budget)
+				.remark(createEmployeeRequest.getRemark())
+				.status(createEmployeeRequest.getStatus())
+				.build();
 
 		return employeeRepository.save(employee);
 	}
