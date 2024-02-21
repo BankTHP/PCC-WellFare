@@ -6,7 +6,7 @@ DivisionID,Remark,EDivision,TDivision,EDept,TDept,Company,DeptCode,DeptID,Code
 "TOP",,"Technical Operation Division","ฝ่ายเทคนิคและพัฒนาระบบงาน","Network & Security Engineering Department","แผนกวิศวกรรมเครือข่ายคอมพิวเตอร์","WiseSoft","NS","4100 NS","4100"
 "SD",,"Software Development Division","ฝ่ายพัฒนาระบบงาน","Software Development 1 Department","แผนกพัฒนาระบบงาน 1","WiseSoft","SD","5000 SD","5000"
 "HQ",,"Head Quarter","สำนักกรรมการผู้จัดการ",,,"WiseSoft","HQ","1000 HQ","1000"
-"FSI",,"Financial Service Institute Sector Division","ฝ่ายการตลาดกลุ่มลูกค้าสถาบันการเงิน",,,"PCC","FSI","1011 FSI","1011"
+"FSI",,"Financial Service Institute Sector Division","ฝ่ายการตลาดกลุ่มลูกค้าสถาบันการเงิน",,,"PCC",,"1011 FSI","1011"
 "MK",,"Marketing Division","ฝ่ายการตลาด","Marketing Department","แผนกการตลาด","WiseSoft","MK","2000 MK","2000"
 "MS",,"Marketing Support Division","ฝ่าย Marketing Support","Marketing Support Department","แผนก Marketing Support","PCC","MS","3011 MS","3011"
 "SD",,"Software Development Division","ฝ่ายพัฒนาระบบงาน","Software Development 2 Department","แผนกพัฒนาระบบงาน 2","PCC","SD2","4012 SD2","4012"
