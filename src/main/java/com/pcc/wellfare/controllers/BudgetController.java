@@ -62,8 +62,8 @@ public class BudgetController {
         }
     }
 
-    @PutMapping(value = "/editBudget")
-    public ResponseEntity<ApiResponse> editBudget(Long budgetId,CreateBudgetRequest createBudgetRequest) {
+    @PutMapping(value = "/editBudget/{budgetId}")
+    public ResponseEntity<ApiResponse> editBudget(@PathVariable Long budgetId,@RequestBody CreateBudgetRequest createBudgetRequest) {
         ApiResponse response = new ApiResponse();
         ResponseData data = new ResponseData();
         try {
