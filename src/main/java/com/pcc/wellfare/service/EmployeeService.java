@@ -117,6 +117,7 @@ public class EmployeeService {
 				.orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + userid));
 
 		employee.setDept(dept);
+		employee.setEmpid(editEmployeeRequest.getEmpid());
 		employee.setEmail(editEmployeeRequest.getEmail());
 		employee.setTprefix(editEmployeeRequest.getTPrefix());
 		employee.setTname(editEmployeeRequest.getTName());
@@ -286,8 +287,8 @@ public class EmployeeService {
 	public List<Employee> findByTnameContainingOrTsurnameContaining(String fname, String Sname) {
 		return employeeRepository.findByTnameContainingOrTsurnameContaining(fname, Sname);
 	}
-	
-	public List<Employee> generateEmpidAutocomplete(String empid){
+
+	public List<Employee> generateEmpidAutocomplete(String empid) {
 		return employeeRepository.findByEmpidStartingWith(empid);
 	}
 
