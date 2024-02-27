@@ -41,6 +41,9 @@ public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
 
     Page<Expenses> findAllByEmployeeUserId(Long userId, Pageable pageable);
     
+    @Query(value = "UPDATE Employee e SET e.budget_id = NULL WHERE e.budget_id = :budgetId" , nativeQuery = true)
+    void updateExpenseBudgetIdToNull(Long budgetId);
+    
 
     
 }

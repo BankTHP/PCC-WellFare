@@ -83,7 +83,7 @@ public class BudgetController {
         ApiResponse response = new ApiResponse();
         ResponseData data = new ResponseData();
         try {
-            budgetRepository.deleteById(budgetId);
+        	budgetService.deleteBudget(budgetId);
             response.setResponseMessage("ลบข้อมูลเรียบร้อย");
             response.setResponseData(data);
             return ResponseEntity.ok().body(response);

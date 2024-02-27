@@ -4,9 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.pcc.wellfare.model.Employee;
+
+import jakarta.transaction.Transactional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     boolean existsByEmail(String email);
@@ -30,4 +34,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Long> findUserIdByEmpid(String empid);
     
     List<Employee> findByEmpidStartingWith(String empid);
+    
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE Employee SET budget_id = NULL WHERE budget_id = :budgetId", nativeQuery = true)
+    void updateEmployeeBudgetIdToNull(@Param("budgetId") Long budgetId);
+
+
 }

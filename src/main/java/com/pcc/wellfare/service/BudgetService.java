@@ -6,6 +6,7 @@ import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.pcc.wellfare.CSVRepresentation.BudgetCsvRepresentation;
 import com.pcc.wellfare.model.Budget;
 import com.pcc.wellfare.repository.BudgetRepository;
+import com.pcc.wellfare.repository.EmployeeRepository;
 import com.pcc.wellfare.requests.CreateBudgetRequest;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class BudgetService {
 
 	private final EntityManager entityManager;
 	private final BudgetRepository budgetRepository;
+	private final EmployeeRepository empRepository;
 
 	public Budget create(CreateBudgetRequest createBudgetRequest) {
 
@@ -76,4 +78,9 @@ public class BudgetService {
 					.collect(Collectors.toSet());
 		}
 	}
+	
+	public void deleteBudget(Long budgetId) {
+		empRepository.updateEmployeeBudgetIdToNull(budgetId);
+        budgetRepository.deleteById(budgetId);
+    }
 }
