@@ -101,31 +101,28 @@ public class EmployeeService {
 	}
 
 	public Employee updateEmployee(Long userid, EditEmployeeRequest editEmployeeRequest) {
-		// String email = editEmployeeRequest.getEmail();
-
-		// if (email == null || email.isEmpty() || email.equals("")) {
-		// } else {
-		// if (employeeRepository.existsByEmail(email)) {
-		// throw new RuntimeException("Email is already in use.");
-		// }
-		// }
 		Optional<Budget> budgetOptional = budgetRepository.findByLevel(editEmployeeRequest.getLevel());
 		Budget budget = budgetOptional.orElseThrow(() -> new RuntimeException("Budget not found"));
 		Optional<Dept> deptOptional = deptRepository.findById(editEmployeeRequest.getDeptCode());
 		Dept dept = deptOptional.orElseThrow(() -> new RuntimeException("Dept not found"));
 		Employee employee = employeeRepository.findById(userid)
 				.orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + userid));
-
-		employee.setDept(dept);
-		employee.setEmail(editEmployeeRequest.getEmail());
-		employee.setTprefix(editEmployeeRequest.getTPrefix());
-		employee.setTname(editEmployeeRequest.getTName());
-		employee.setTsurname(editEmployeeRequest.getTSurname());
-		employee.setTposition(editEmployeeRequest.getTPosition());
-		employee.setBudget(budget);
-		employee.setRemark(editEmployeeRequest.getRemark());
-		employee.setStatus(this.getStatusCode(editEmployeeRequest.getRemark()));
-		return employeeRepository.save(employee);
+		if(employeeRepository.existsByEmpid(editEmployeeRequest.getEmpId())){
+			throw new EntityNotFoundException("EmpCode is dup");
+		}
+		else{
+			employee.setEmpid(editEmployeeRequest.getEmpId());
+			employee.setDept(dept);
+			employee.setEmail(editEmployeeRequest.getEmail());
+			employee.setTprefix(editEmployeeRequest.getTPrefix());
+			employee.setTname(editEmployeeRequest.getTName());
+			employee.setTsurname(editEmployeeRequest.getTSurname());
+			employee.setTposition(editEmployeeRequest.getTPosition());
+			employee.setBudget(budget);
+			employee.setRemark(editEmployeeRequest.getRemark());
+			employee.setStatus(this.getStatusCode(editEmployeeRequest.getRemark()));
+			return employeeRepository.save(employee);
+		}
 	}
 
 	private String getStatusCode(String type) {
@@ -286,8 +283,8 @@ public class EmployeeService {
 	public List<Employee> findByTnameContainingOrTsurnameContaining(String fname, String Sname) {
 		return employeeRepository.findByTnameContainingOrTsurnameContaining(fname, Sname);
 	}
-	
-	public List<Employee> generateEmpidAutocomplete(String empid){
+
+	public List<Employee> generateEmpidAutocomplete(String empid) {
 		return employeeRepository.findByEmpidStartingWith(empid);
 	}
 

@@ -3,19 +3,11 @@ package com.pcc.wellfare.requests;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.List;
-
-import com.pcc.wellfare.model.Budget;
-import com.pcc.wellfare.model.Dept;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
 @Data
 @Builder
 public class EditEmployeeRequest {
 
+  String empId;
   String deptCode;
   String tPrefix;
   String tName;
@@ -24,4 +16,5 @@ public class EditEmployeeRequest {
   String level;
   String remark;
   String email;
+  String empId;
 }
