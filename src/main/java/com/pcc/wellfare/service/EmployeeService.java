@@ -117,7 +117,7 @@ public class EmployeeService {
 				.orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + userid));
 
 		employee.setDept(dept);
-		employee.setEmpid(editEmployeeRequest.getEmpid());
+		employee.setEmpid(editEmployeeRequest.getEmpId());
 		employee.setEmail(editEmployeeRequest.getEmail());
 		employee.setTprefix(editEmployeeRequest.getTPrefix());
 		employee.setTname(editEmployeeRequest.getTName());

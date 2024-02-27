@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 public class EditEmployeeRequest {
 
-  String empid;
+  String empId;
   String deptCode;
   String tPrefix;
   String tName;
