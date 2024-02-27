@@ -24,4 +24,5 @@ public class EditEmployeeRequest {
   String level;
   String remark;
   String email;
+  String empId;
 }

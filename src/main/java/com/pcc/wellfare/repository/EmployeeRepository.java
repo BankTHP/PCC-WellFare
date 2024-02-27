@@ -11,6 +11,8 @@ import com.pcc.wellfare.model.Employee;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     boolean existsByEmail(String email);
 
+    boolean existsByEmpid(String empid);
+
     Optional<Employee> findByEmpid(String empid);
 
     Optional<Employee> findById(Long userId);
