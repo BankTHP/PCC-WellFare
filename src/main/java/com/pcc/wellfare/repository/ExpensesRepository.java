@@ -44,6 +44,19 @@ public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
     @Query(value = "UPDATE Employee e SET e.budget_id = NULL WHERE e.budget_id = :budgetId" , nativeQuery = true)
     void updateExpenseBudgetIdToNull(Long budgetId);
     
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(MONTH FROM date_of_admission) = :month " +
+            "AND EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "AND ipd != 0", nativeQuery = true)
+    List<Expenses> getIpdExpenseByMonthAndYear(Integer month,Integer year);
+    
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(MONTH FROM date_of_admission) = :month " +
+            "AND EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "AND opd != 0", nativeQuery = true)
+    List<Expenses> getOpdExpenseByMonthAndYear(Integer month,Integer year);
 
     
 }
