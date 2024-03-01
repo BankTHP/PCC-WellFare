@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pcc.wellfare.response.ApiResponse;
+import com.pcc.wellfare.response.ResponseData;
 import com.pcc.wellfare.service.JasperService;
 
 import lombok.AllArgsConstructor;
@@ -41,4 +43,25 @@ public class ReportController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @GetMapping("/expenseHistoryReportBase64")
+    public ResponseEntity<ApiResponse> printExpenseHistoryReportBase64(
+            @RequestParam Integer month,
+            @RequestParam Integer year,
+            @RequestParam String type) {
+    	ApiResponse api = new ApiResponse();
+    	ResponseData data = new ResponseData();
+        try {
+            String base64String = jasperService.printExpenseHistoryReportBase64(month, year, type);
+            data.setResult(base64String);
+            api.setResponseData(data);
+            api.setResponseMessage("Success");
+            HttpHeaders headers = new HttpHeaders();
+            return ResponseEntity.ok(api);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

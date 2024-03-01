@@ -1,10 +1,12 @@
 package com.pcc.wellfare.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -86,6 +88,55 @@ public class JasperService {
 	    File filePdf = new File("Report.pdf");
 	    return FileUtils.readFileToByteArray(filePdf);
 	}
+	
+	public String printExpenseHistoryReportBase64(Integer month, Integer year, String type) throws JRException, IOException {
+	    Resource resource = resourceLoader.getResource("classpath:report/ExpenseHistory.jrxml");
+	    InputStream expenseHistoryReportStream = resource.getInputStream();
+
+	    List<Expenses> expenseList = new ArrayList<>();
+	    String thaiMonth = getThaiMonth(month);
+	    String buddhistYear = String.valueOf(year + 543);
+	    Map<String, Object> params = new HashMap<String, Object>();
+	    String typeName = (type.equals("ipd")) ? "ผู้ป่วยใน" : "ผู้ป่วยนอก";
+	    params.put("expenseType", typeName);
+	    params.put("expenseMonth", thaiMonth);
+	    params.put("expenseYear", buddhistYear);
+
+	    if (type.equals("ipd")) {
+	        expenseList = expensesRepository.getIpdExpenseByMonthAndYear(month, year);
+	    } else {
+	        expenseList = expensesRepository.getOpdExpenseByMonthAndYear(month, year);
+	    }
+
+	    List<ExpenseHistoryRequest> expenseHistoryList = new ArrayList<>();
+	    for (Expenses expense : expenseList) {
+	        ExpenseHistoryRequest expenseHistoryModel = ExpenseHistoryRequest
+	                .builder()
+	                .dateCount(expense.getDays())
+	                .dateOfAdmidtion(BuddhistDateInThaiFomat(expense.getDateOfAdmission()))
+	                .description(expense.getDescription())
+	                .endDate(BuddhistDateInThaiFomat(expense.getEndDate()))
+	                .firstname(expense.getEmployee().getTname())
+	                .remark(expense.getRemark())
+	                .startDate(BuddhistDateInThaiFomat(expense.getStartDate()))
+	                .surname(expense.getEmployee().getTsurname())
+	                .withdraw((double) expense.getCanWithdraw())
+	                .prefix(expense.getEmployee().getTprefix())
+	                .build();
+	        expenseHistoryList.add(expenseHistoryModel);
+	    }
+
+	    JasperReport jasperReport = JasperCompileManager.compileReport(expenseHistoryReportStream);
+	    JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(expenseHistoryList);
+
+	    params.put("ExpenseHistoryDataSet", dataSource);
+	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
+	    byte[] bytes = JasperExportManager.exportReportToPdf(jasperPrint);
+	    String base64String = Base64.getEncoder().encodeToString(bytes);
+
+	    return base64String;
+	}
+
 
 	private String BuddhistDateInThaiFomat(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
