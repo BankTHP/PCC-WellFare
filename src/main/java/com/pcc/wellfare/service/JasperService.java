@@ -43,45 +43,51 @@ public class JasperService {
 	@Autowired
 	private ResourceLoader resourceLoader;
 
-	public byte[] printExpenseHistoryReport(Integer month, Integer year, String type) throws JRException, IOException {
+	public byte[] printExpenseHistoryReport(Integer month, Integer year, String type,String reportType) throws JRException, IOException {
 		Resource resource = resourceLoader.getResource("classpath:report/ExpenseHistory.jrxml");
-	    InputStream ExpenseHistoryReportSteam = resource.getInputStream();
-		
-		List<Expenses> expenseList = new ArrayList<>();
-		String ThaiMonth = getThaiMonth(month);
-		String BuddhistYear = String.valueOf(year + 543);
-		Map<String, Object> params = new HashMap<String, Object>();
-		String typeName = (type.equals("ipd")) ? "ผู้ป่วยใน" : "ผู้ป่วยนอก";
-		params.put("expenseType", typeName);
-		params.put("expenseMonth", ThaiMonth);
-		params.put("expenseYear", BuddhistYear);
+	    InputStream expenseHistoryReportStream = resource.getInputStream();
 
-		if (type.equals("ipd")) {
-			expenseList = expensesRepository.getIpdExpenseByMonthAndYear(month, year);
-		} else {
-			expenseList = expensesRepository.getOpdExpenseByMonthAndYear(month, year);
-		}
+	    List<Expenses> expenseList = new ArrayList<>();
+	    String thaiMonth = "";
+	    String buddhistYear = String.valueOf(year + 543);
+	    Map<String, Object> params = new HashMap<String, Object>();
+	    String typeName = thaiHealthType(type);
 
-		List<ExpenseHistoryRequest> ExpenseHistoryList = new ArrayList<>();
-		for (Expenses expense : expenseList) {
-			ExpenseHistoryRequest ExpenseHistoryModel = ExpenseHistoryRequest
-					.builder()
-					.dateCount(expense.getDays())
-					.dateOfAdmidtion(BuddhistDateInThaiFomat(expense.getDateOfAdmission()))
-					.description(expense.getDescription())
-					.endDate(BuddhistDateInThaiFomat(expense.getEndDate()))
-					.firstname(expense.getEmployee().getTname())
-					.remark(expense.getRemark())
-					.startDate(BuddhistDateInThaiFomat(expense.getStartDate()))
-					.surname(expense.getEmployee().getTsurname())
-					.withdraw((double) expense.getCanWithdraw())
-					.prefix(expense.getEmployee().getTprefix())
-					.build();
-			ExpenseHistoryList.add(ExpenseHistoryModel);
-		}
+
+	    if (reportType.equals("byYear")) {
+	        expenseList = getExpenseByYear(type, year);
+	        thaiMonth = (year.equals(LocalDate.now().getYear())) ? getThaiMonth(1) + " - " + getThaiMonth(LocalDate.now().getMonth().getValue())
+	        :getThaiMonth(1) + " - " + getThaiMonth(12) ;
+	        
+	    } else {
+	        expenseList = getExpenseByMonth(type, month, year);
+	        thaiMonth = getThaiMonth(month);
+	    }
+
+	    List<ExpenseHistoryRequest> expenseHistoryList = new ArrayList<>();
+	    for (Expenses expense : expenseList) {
+	        ExpenseHistoryRequest expenseHistoryModel = ExpenseHistoryRequest
+	                .builder()
+	                .dateCount(expense.getDays())
+	                .dateOfAdmidtion(BuddhistDateInThaiFomat(expense.getDateOfAdmission()))
+	                .description(expense.getDescription())
+	                .endDate(BuddhistDateInThaiFomat(expense.getEndDate()))
+	                .firstname(expense.getEmployee().getTname())
+	                .remark(expense.getRemark())
+	                .startDate(BuddhistDateInThaiFomat(expense.getStartDate()))
+	                .surname(expense.getEmployee().getTsurname())
+	                .withdraw((double) expense.getCanWithdraw())
+	                .prefix(expense.getEmployee().getTprefix())
+	                .build();
+	        expenseHistoryList.add(expenseHistoryModel);
+	    }
+	    
+	    params.put("expenseMonth", thaiMonth);
+	    params.put("expenseYear", buddhistYear);
+	    params.put("expenseType", typeName);
 		
-		JasperReport jasperReport = JasperCompileManager.compileReport(ExpenseHistoryReportSteam);
-		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(ExpenseHistoryList);
+		JasperReport jasperReport = JasperCompileManager.compileReport(expenseHistoryReportStream);
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(expenseHistoryList);
 		
 		params.put("ExpenseHistoryDataSet", dataSource);
 	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
@@ -95,14 +101,11 @@ public class JasperService {
 	    InputStream expenseHistoryReportStream = resource.getInputStream();
 
 	    List<Expenses> expenseList = new ArrayList<>();
-//	    String thaiMonth = getThaiMonth(month);
 	    String thaiMonth = "";
 	    String buddhistYear = String.valueOf(year + 543);
 	    Map<String, Object> params = new HashMap<String, Object>();
-//	    String typeName = (type.equals("ipd")) ? "ผู้ป่วยใน" : "ผู้ป่วยนอก";
 	    String typeName = thaiHealthType(type);
-//	    params.put("expenseType", typeName);
-//	    params.put("expenseMonth", thaiMonth);
+
 
 	    if (reportType.equals("byYear")) {
 	        expenseList = getExpenseByYear(type, year);

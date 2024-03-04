@@ -28,9 +28,10 @@ public class ReportController {
     public ResponseEntity<byte[]> printExpenseHistoryReport(
             @RequestParam Integer month,
             @RequestParam Integer year,
-            @RequestParam String type) {
+            @RequestParam String type,
+            @RequestParam String reportType) {
         try {
-            byte[] report = jasperService.printExpenseHistoryReport(month, year, type);
+            byte[] report = jasperService.printExpenseHistoryReport(month, year, type, reportType);
             Integer buddhistYear = year + 543;
             String filename = URLEncoder.encode("รายงานการเบิกค่ารักษาพยาบาลประจำเดือน" + jasperService.getThaiMonth(month) + buddhistYear + ".pdf", "UTF-8");
             HttpHeaders headers = new HttpHeaders();
