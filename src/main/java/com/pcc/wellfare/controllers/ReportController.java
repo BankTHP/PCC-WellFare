@@ -26,7 +26,7 @@ public class ReportController {
 	
 	@GetMapping("/expenseHistoryReport")
     public ResponseEntity<byte[]> printExpenseHistoryReport(
-            @RequestParam Integer month,
+            @RequestParam(required = false , defaultValue = "0") Integer month,
             @RequestParam Integer year,
             @RequestParam String type,
             @RequestParam String reportType) {
@@ -47,7 +47,7 @@ public class ReportController {
     
     @GetMapping("/expenseHistoryReportBase64")
     public ResponseEntity<ApiResponse> printExpenseHistoryReportBase64(
-            @RequestParam Integer month,
+            @RequestParam(required = false , defaultValue = "0") Integer month,
             @RequestParam Integer year,
             @RequestParam String type,
             @RequestParam String reportType) {

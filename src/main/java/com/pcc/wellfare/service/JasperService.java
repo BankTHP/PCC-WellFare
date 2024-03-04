@@ -149,9 +149,21 @@ public class JasperService {
 	    return base64String;
 	}
 	
+	public String printExpenseHistoryReportByperson() throws IOException {
+		Resource resource = resourceLoader.getResource("classpath:report/ExpenseHistoryByPerson.jrxml");
+	    InputStream expenseHistoryReportStream = resource.getInputStream();
+	    
+		return "";
+	}
+	
+	private List<Expenses> getExpenseByPerson(){
+	    List<Expenses> expenseList = new ArrayList<>();
+
+		return expenseList;
+	}
+	
 	private List<Expenses> getExpenseByYear(String healthType,Integer year) {
 	    List<Expenses> expenseList = new ArrayList<>();
-	    
 	    switch (healthType) {
 		case "ipd": {
 			return expensesRepository.getIpdExpenseByYear(year);

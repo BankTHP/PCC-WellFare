@@ -1,5 +1,6 @@
 package com.pcc.wellfare.repository;
 
+import com.pcc.wellfare.model.Employee;
 import com.pcc.wellfare.model.Expenses;
 
 import org.springframework.data.domain.Page;
@@ -86,4 +87,7 @@ public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
             "AND EXTRACT(YEAR FROM date_of_admission) = :year " +
             "ORDER BY date_of_admission ASC", nativeQuery = true)
     List<Expenses> getAllExpenseByMonthAndYear(Integer month,Integer year);
+    
+    List<Expenses> findAllByEmployee(Employee employee);
+
 }
