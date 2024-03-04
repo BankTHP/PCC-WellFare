@@ -18,7 +18,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
+import com.pcc.wellfare.model.Employee;
 import com.pcc.wellfare.model.Expenses;
+import com.pcc.wellfare.repository.EmployeeRepository;
 import com.pcc.wellfare.repository.ExpensesRepository;
 import com.pcc.wellfare.requests.ExpenseHistoryRequest;
 
@@ -39,6 +41,9 @@ public class JasperService {
 
 	@Autowired
 	private final ExpensesRepository expensesRepository;
+	
+	@Autowired
+	private final EmployeeRepository employeeRepository;
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
@@ -149,17 +154,83 @@ public class JasperService {
 	    return base64String;
 	}
 	
-	public String printExpenseHistoryReportByperson() throws IOException {
+	public String printExpenseHistoryReportByperson(Long uid, String reportType, String Htype, Integer month, Integer year) throws IOException, JRException {
+		//prepare zone
 		Resource resource = resourceLoader.getResource("classpath:report/ExpenseHistoryByPerson.jrxml");
 	    InputStream expenseHistoryReportStream = resource.getInputStream();
+	    Map<String, Object> params = new HashMap<String, Object>();
+	    Employee emp = employeeRepository.findById(uid).get();
+	    List<ExpenseHistoryRequest> expenseHistoryList = new ArrayList<>();
+	    String thaiMonth = "";
+	    String buddhistYear = String.valueOf(year + 543);
+	    String typeName = thaiHealthType(Htype);
 	    
-		return "";
+	    //param insert zone
+	    if (reportType.equals("byYear")) {
+	    	thaiMonth = (year.equals(LocalDate.now().getYear())) ? getThaiMonth(1) + " - " + getThaiMonth(LocalDate.now().getMonth().getValue())
+	        :getThaiMonth(1) + " - " + getThaiMonth(12) ;
+	    }else {
+	        thaiMonth = getThaiMonth(month);
+	    }
+	    List<Expenses> expenseList = getExpenseByPerson(uid,reportType,Htype,month,year);
+	    for (Expenses expense : expenseList) {
+	        ExpenseHistoryRequest expenseHistoryModel = ExpenseHistoryRequest
+	                .builder()
+	                .dateCount(expense.getDays())
+	                .dateOfAdmidtion(BuddhistDateInThaiFomat(expense.getDateOfAdmission()))
+	                .description(expense.getDescription())
+	                .endDate(BuddhistDateInThaiFomat(expense.getEndDate()))
+	                .remark(expense.getRemark())
+	                .startDate(BuddhistDateInThaiFomat(expense.getStartDate()))
+	                .withdraw((double) expense.getCanWithdraw())
+	                .build();
+	        expenseHistoryList.add(expenseHistoryModel);
+	    }
+	    
+	    params.put("tPrefix", emp.getTprefix());
+	    params.put("tFirstname",emp.getTname());
+	    params.put("tSname",emp.getTsurname());
+	    params.put("expenseMonth", thaiMonth);
+	    params.put("expenseType", typeName);
+	    params.put("expenseYear", buddhistYear);
+	    
+	    //compile zone
+	    JasperReport jasperReport = JasperCompileManager.compileReport(expenseHistoryReportStream);
+	    JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(expenseHistoryList);
+	    
+	    params.put("ExpenseHistoryDataSet", dataSource);
+	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
+	    byte[] bytes = JasperExportManager.exportReportToPdf(jasperPrint);
+	    String base64String = Base64.getEncoder().encodeToString(bytes);
+
+	    return base64String;
 	}
 	
-	private List<Expenses> getExpenseByPerson(){
+	private List<Expenses> getExpenseByPerson(Long uid, String reportType, String Htype, Integer month, Integer year){
 	    List<Expenses> expenseList = new ArrayList<>();
-
-		return expenseList;
+	    if(reportType.equals("byMonth")) {
+	    	switch (Htype) {
+			case "ipd": 
+				return expensesRepository.getIpdExpenseByMonthAndYearAndUser(month, year, uid);
+			case "opd": 
+				return expensesRepository.getOpdExpenseByMonthAndYearAndUser(month, year, uid);
+			case "all": 
+				return expensesRepository.getAllExpenseByMonthAndUser(month, uid);
+			default :
+				return expenseList;
+				}
+	    }else {
+	    	switch (Htype) {
+			case "ipd": 
+				return expensesRepository.getIpdExpenseByYearAndUser(year, uid);
+			case "opd": 
+				return expensesRepository.getOpdExpenseByYearAndUser(year, uid);
+			case "all": 
+				return expensesRepository.getAllExpenseByYearAndUser(year, uid);
+			default :
+				return expenseList;
+				}
+	    }
 	}
 	
 	private List<Expenses> getExpenseByYear(String healthType,Integer year) {

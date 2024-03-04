@@ -89,5 +89,52 @@ public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
     List<Expenses> getAllExpenseByMonthAndYear(Integer month,Integer year);
     
     List<Expenses> findAllByEmployee(Employee employee);
+    
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "AND user_id = CAST(:uid AS bigint) " +
+            "ORDER BY date_of_admission ASC ", nativeQuery = true)
+    List<Expenses> getAllExpenseByYearAndUser(Integer year, Long uid);
+    
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(MONTH FROM date_of_admission) = :month " +
+            "AND user_id = CAST(:uid AS bigint) " +
+            "ORDER BY date_of_admission ASC ", nativeQuery = true)
+    List<Expenses> getAllExpenseByMonthAndUser(Integer month, Long uid);
+    
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "AND user_id = CAST(:uid AS bigint) " +
+            "AND ipd != 0 "+
+            "ORDER BY date_of_admission ASC ", nativeQuery = true)
+    List<Expenses> getIpdExpenseByYearAndUser(Integer year, Long uid);
 
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "AND user_id = CAST(:uid AS bigint) " +
+            "AND opd != 0 "+
+            "ORDER BY date_of_admission ASC ", nativeQuery = true)
+    List<Expenses> getOpdExpenseByYearAndUser(Integer year, Long uid);
+
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(MONTH FROM date_of_admission) = :month " +
+            "AND EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "AND user_id = CAST(:uid AS bigint) " +
+            "AND opd != 0 " +
+            "ORDER BY date_of_admission ASC", nativeQuery = true)
+    List<Expenses> getOpdExpenseByMonthAndYearAndUser(Integer month,Integer year, Long uid);
+    
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(MONTH FROM date_of_admission) = :month " +
+            "AND EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "AND user_id = CAST(:uid AS bigint) " +
+            "AND ipd != 0 " +
+            "ORDER BY date_of_admission ASC", nativeQuery = true)
+    List<Expenses> getIpdExpenseByMonthAndYearAndUser(Integer month,Integer year, Long uid);
 }

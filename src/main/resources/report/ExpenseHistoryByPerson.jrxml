@@ -37,9 +37,9 @@
 		<field name="description" class="java.lang.String"/>
 		<field name="startDate" class="java.lang.String"/>
 		<field name="endDate" class="java.lang.String"/>
-		<field name="dateCount" class="java.lang.String"/>
+		<field name="dateCount" class="java.lang.Integer"/>
 		<field name="remark" class="java.lang.String"/>
-		<field name="withdraw" class="java.lang.String"/>
+		<field name="withdraw" class="java.lang.Double"/>
 		<variable name="withdrawTotal" class="java.lang.Double" calculation="Sum">
 			<variableExpression><![CDATA[$F{withdraw}]]></variableExpression>
 		</variable>

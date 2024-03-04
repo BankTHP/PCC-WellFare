@@ -64,5 +64,27 @@ public class ReportController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @GetMapping("/expenseHistoryReportByEmployeeBase64")
+    public ResponseEntity<ApiResponse> ExpenseHistoryReportBase64ByUser(
+    		@RequestParam(required = false , defaultValue = "0") Integer month,
+            @RequestParam Integer year,
+            @RequestParam String type,
+            @RequestParam String reportType,
+            @RequestParam Long uid) {
+        ApiResponse api = new ApiResponse();
+    	ResponseData data = new ResponseData();
+        try {
+            String base64String = jasperService.printExpenseHistoryReportByperson(uid, reportType, type, month, year);
+            data.setResult(base64String);
+            api.setResponseData(data);
+            api.setResponseMessage("Success");
+            return ResponseEntity.ok(api);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 
 }
