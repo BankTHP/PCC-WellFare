@@ -48,15 +48,15 @@ public class ReportController {
     public ResponseEntity<ApiResponse> printExpenseHistoryReportBase64(
             @RequestParam Integer month,
             @RequestParam Integer year,
-            @RequestParam String type) {
+            @RequestParam String type,
+            @RequestParam String reportType) {
     	ApiResponse api = new ApiResponse();
     	ResponseData data = new ResponseData();
         try {
-            String base64String = jasperService.printExpenseHistoryReportBase64(month, year, type);
+            String base64String = jasperService.printExpenseHistoryReportBase64(month, year, type, reportType);
             data.setResult(base64String);
             api.setResponseData(data);
             api.setResponseMessage("Success");
-            HttpHeaders headers = new HttpHeaders();
             return ResponseEntity.ok(api);
         } catch (Exception e) {
             e.printStackTrace();

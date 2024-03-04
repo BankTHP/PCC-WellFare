@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
@@ -89,23 +90,28 @@ public class JasperService {
 	    return FileUtils.readFileToByteArray(filePdf);
 	}
 	
-	public String printExpenseHistoryReportBase64(Integer month, Integer year, String type) throws JRException, IOException {
+	public String printExpenseHistoryReportBase64(Integer month, Integer year, String type, String reportType) throws JRException, IOException {
 	    Resource resource = resourceLoader.getResource("classpath:report/ExpenseHistory.jrxml");
 	    InputStream expenseHistoryReportStream = resource.getInputStream();
 
 	    List<Expenses> expenseList = new ArrayList<>();
-	    String thaiMonth = getThaiMonth(month);
+//	    String thaiMonth = getThaiMonth(month);
+	    String thaiMonth = "";
 	    String buddhistYear = String.valueOf(year + 543);
 	    Map<String, Object> params = new HashMap<String, Object>();
-	    String typeName = (type.equals("ipd")) ? "ผู้ป่วยใน" : "ผู้ป่วยนอก";
-	    params.put("expenseType", typeName);
-	    params.put("expenseMonth", thaiMonth);
-	    params.put("expenseYear", buddhistYear);
+//	    String typeName = (type.equals("ipd")) ? "ผู้ป่วยใน" : "ผู้ป่วยนอก";
+	    String typeName = thaiHealthType(type);
+//	    params.put("expenseType", typeName);
+//	    params.put("expenseMonth", thaiMonth);
 
-	    if (type.equals("ipd")) {
-	        expenseList = expensesRepository.getIpdExpenseByMonthAndYear(month, year);
+	    if (reportType.equals("byYear")) {
+	        expenseList = getExpenseByYear(type, year);
+	        thaiMonth = (year.equals(LocalDate.now().getYear())) ? getThaiMonth(1) + " - " + getThaiMonth(LocalDate.now().getMonth().getValue())
+	        :getThaiMonth(1) + " - " + getThaiMonth(12) ;
+	        
 	    } else {
-	        expenseList = expensesRepository.getOpdExpenseByMonthAndYear(month, year);
+	        expenseList = getExpenseByMonth(type, month, year);
+	        thaiMonth = getThaiMonth(month);
 	    }
 
 	    List<ExpenseHistoryRequest> expenseHistoryList = new ArrayList<>();
@@ -125,7 +131,10 @@ public class JasperService {
 	                .build();
 	        expenseHistoryList.add(expenseHistoryModel);
 	    }
-
+	    
+	    params.put("expenseMonth", thaiMonth);
+	    params.put("expenseYear", buddhistYear);
+	    params.put("expenseType", typeName);
 	    JasperReport jasperReport = JasperCompileManager.compileReport(expenseHistoryReportStream);
 	    JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(expenseHistoryList);
 
@@ -135,6 +144,44 @@ public class JasperService {
 	    String base64String = Base64.getEncoder().encodeToString(bytes);
 
 	    return base64String;
+	}
+	
+	private List<Expenses> getExpenseByYear(String healthType,Integer year) {
+	    List<Expenses> expenseList = new ArrayList<>();
+	    
+	    switch (healthType) {
+		case "ipd": {
+			return expensesRepository.getIpdExpenseByYear(year);
+		}
+		case "opd": {
+			return expensesRepository.getOpdExpenseByYear(year);
+		}		
+		case "all": {
+			return expensesRepository.getAllExpenseByYear(year);
+			}
+		default:
+			return expenseList;
+		}
+	   
+	}
+	
+	private List<Expenses> getExpenseByMonth(String healthType,Integer month,Integer year) {
+	    List<Expenses> expenseList = new ArrayList<>();
+	    
+	    switch (healthType) {
+		case "ipd": {
+			return expensesRepository.getIpdExpenseByMonthAndYear(month,year);
+		}
+		case "opd": {
+			return expensesRepository.getOpdExpenseByMonthAndYear(month,year);
+		}		
+		case "all": {
+			return expensesRepository.getAllExpenseByMonthAndYear(month,year);
+			}
+		default:
+			return expenseList;
+		}
+	   
 	}
 
 
@@ -149,6 +196,19 @@ public class JasperService {
 		int year = Integer.parseInt(parts[2]) + 543;
 
 		return String.format("%02d/%02d/%02d", day, month, year);
+	}
+	
+	private String thaiHealthType(String type) {
+		switch	(type) {
+		case "ipd":
+			return "ผู้ป่วยใน";
+		case "opd":
+			return "ผู้ป่วยนอก";
+		case "all":
+			return "ทั้งหมด";
+		default : 
+			return  "";
+		}
 	}
 
 	public String getThaiMonth(int month) {

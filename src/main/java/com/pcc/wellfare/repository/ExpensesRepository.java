@@ -48,15 +48,42 @@ public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
             "FROM Expenses " +
             "WHERE EXTRACT(MONTH FROM date_of_admission) = :month " +
             "AND EXTRACT(YEAR FROM date_of_admission) = :year " +
-            "AND ipd != 0", nativeQuery = true)
+            "AND ipd != 0" +
+            "ORDER BY date_of_admission ASC", nativeQuery = true)
     List<Expenses> getIpdExpenseByMonthAndYear(Integer month,Integer year);
     
     @Query(value = "SELECT *" +
             "FROM Expenses " +
             "WHERE EXTRACT(MONTH FROM date_of_admission) = :month " +
             "AND EXTRACT(YEAR FROM date_of_admission) = :year " +
-            "AND opd != 0", nativeQuery = true)
+            "AND opd != 0" +
+            "ORDER BY date_of_admission ASC", nativeQuery = true)
     List<Expenses> getOpdExpenseByMonthAndYear(Integer month,Integer year);
-
     
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "AND ipd != 0" +
+            "ORDER BY date_of_admission ASC", nativeQuery = true)
+    List<Expenses> getIpdExpenseByYear(Integer year);
+    
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "AND opd != 0" +
+            "ORDER BY date_of_admission ASC", nativeQuery = true)
+    List<Expenses> getOpdExpenseByYear(Integer year);
+    
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "ORDER BY date_of_admission ASC", nativeQuery = true)
+    List<Expenses> getAllExpenseByYear(Integer year);
+    
+    @Query(value = "SELECT *" +
+            "FROM Expenses " +
+            "WHERE EXTRACT(MONTH FROM date_of_admission) = :month " +
+            "AND EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "ORDER BY date_of_admission ASC", nativeQuery = true)
+    List<Expenses> getAllExpenseByMonthAndYear(Integer month,Integer year);
 }

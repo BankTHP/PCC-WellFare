@@ -256,7 +256,7 @@
 							<staticText>
 								<reportElement x="0" y="0" width="51" height="30" uuid="24dff871-1a25-4db8-a89a-14990986a225"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="THSarabunNew" size="14"/>
+									<font fontName="THSarabunNew" size="14" isBold="true"/>
 								</textElement>
 								<text><![CDATA[รวม]]></text>
 							</staticText>
@@ -286,7 +286,7 @@
 							<textField>
 								<reportElement x="0" y="0" width="78" height="30" uuid="1192fcf1-d7ca-43d1-83c8-ede1fb898abd"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="THSarabunNew" size="16"/>
+									<font fontName="THSarabunNew" size="14" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($V{withdrawTotal})]]></textFieldExpression>
 							</textField>
