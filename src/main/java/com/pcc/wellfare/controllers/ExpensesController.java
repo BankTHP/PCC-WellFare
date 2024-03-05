@@ -147,6 +147,24 @@ public class ExpensesController {
 			return ResponseEntity.internalServerError().body(response);
 		}
 	}
+	
+	@GetMapping(value = "/getExpenseRemaining/{uid}/{year}")
+	public ResponseEntity<ApiResponse> getRemaingByYear(
+			@PathVariable("uid")Long userId,
+			@PathVariable("year") Integer year) {
+		ApiResponse response = new ApiResponse();
+		ResponseData data = new ResponseData();
+		try {
+			Object budgets = expensesService.getExpenseRemainingByYear(userId,year);
+			data.setResult(budgets);
+			response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
+			response.setResponseData(data);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			response.setResponseMessage(e.getMessage());
+			return ResponseEntity.internalServerError().body(response);
+		}
+	}
 
 	@GetMapping(value = "/info")
 	public ResponseEntity<ApiResponse> getInfo(Long id) {

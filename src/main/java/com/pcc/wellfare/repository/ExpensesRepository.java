@@ -26,11 +26,27 @@ public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
             "FROM Expenses e " +
             "WHERE e.user_id = CAST(?1 AS bigint) AND EXTRACT(YEAR FROM e.date_of_admission) = EXTRACT(YEAR FROM CURRENT_DATE) and opd != 0" , nativeQuery = true)
     Float getUseOpd(Long userId);
-
+    
     @Query(value = "SELECT SUM(e.can_withdraw) AS total_ipd " +
             "FROM Expenses e " +
             "WHERE e.user_id = CAST(?1 AS bigint) AND EXTRACT(YEAR FROM e.date_of_admission) = EXTRACT(YEAR FROM CURRENT_DATE) and ipd != 0" , nativeQuery = true)
     Float getUseIpd(Long userId);
+    
+    @Query(value = "SELECT SUM(can_withdraw) " +
+            "FROM Expenses " +
+            "WHERE EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "AND user_id = CAST(:uid AS bigint) " +
+            "AND opd != 0 ", nativeQuery = true)
+    Float getUseOpdByYear(Long uid,Integer year);
+    
+    @Query(value = "SELECT SUM(can_withdraw) " +
+            "FROM Expenses " +
+            "WHERE EXTRACT(YEAR FROM date_of_admission) = :year " +
+            "AND user_id = CAST(:uid AS bigint) " +
+            "AND ipd != 0 ", nativeQuery = true)
+    Float getUseIpdByYear(Long uid,Integer year);
+
+    
 
 
 //    List<Expenses> findByEmpId(Long empid);

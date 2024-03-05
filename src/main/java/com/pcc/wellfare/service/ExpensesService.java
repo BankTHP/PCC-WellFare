@@ -425,17 +425,22 @@ public class ExpensesService {
     public Object update(ExpensesRequest expensesRequest, Long expensesId) {
         Optional<Expenses> expensesOptional = expensesRepository.findById(expensesId);
         Expenses expenses = expensesOptional.orElseThrow(() -> new RuntimeException("Expenses not found"));
-
-        float perDay = budgetRepository.getPerDay(expenses.getEmployee().getUserId());
-        float opdExpenses = (expensesRepository.getUseOpd(expenses.getEmployee().getUserId()) != null)
-                ? expensesRepository.getUseOpd(expenses.getEmployee().getUserId())
+        Long empid = expenses.getEmployee().getUserId();
+        Date admissionDate = expensesRequest.getAdMission();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(admissionDate);
+        int year = calendar.get(Calendar.YEAR);
+        System.out.println(year);
+        float perDay = budgetRepository.getPerDay(empid);
+        float opdExpenses = (expensesRepository.getUseOpdByYear(empid, year) != null)
+                ? expensesRepository.getUseOpdByYear(empid, year)
                 : 0.0f;
-        float ipdExpenses = (expensesRepository.getUseIpd(expenses.getEmployee().getUserId()) != null)
-                ? expensesRepository.getUseIpd(expenses.getEmployee().getUserId())
+        float ipdExpenses = (expensesRepository.getUseIpdByYear(empid, year) != null)
+                ? expensesRepository.getUseIpdByYear(empid, year)
                 : 0.0f;
 
-        float totalOpd = budgetRepository.getOpd(expenses.getEmployee().getUserId()) - opdExpenses;
-        float totalIpd = budgetRepository.getIpd(expenses.getEmployee().getUserId()) - ipdExpenses;
+        float totalOpd = budgetRepository.getOpd(empid) - opdExpenses;
+        float totalIpd = budgetRepository.getIpd(empid) - ipdExpenses;
 
         String oldTypeS = (expenses.getIpd() == 0) ? "opd" : "ipd";
         float oldUse = expenses.getCanWithdraw();
@@ -594,6 +599,37 @@ public class ExpensesService {
 
         float ipdRemain = ipdMaxLimit - usedIpd;
         System.out.println("ipdRemain"+ ipdRemain);
+
+        float roomService = budgetRepository.getPerDay(uid);
+        Map<String, Double> responseData = new HashMap<>();
+        responseData.put("opd", (double) opdRemain);
+        responseData.put("ipd", (double) ipdRemain);
+        responseData.put("room", (double) roomService);
+
+        return responseData;
+    }
+    
+    public Map<String, Double> getExpenseRemainingByYear(Long uid,Integer year) {
+        // get MAXLimit of OPD and IPD
+        float ipdMaxLimit = budgetRepository.getIpdLimit(uid);
+        System.out.println("ipdMaxLimit "+ipdMaxLimit);
+        float opdMaxLimit = budgetRepository.getOpdLimit(uid);
+        System.out.println("opdMaxLimit " + opdMaxLimit);
+
+        // useed OPD and IPD
+        Float usedOpd = expensesRepository.getUseOpdByYear(uid, year);
+        float usedOpdValue = usedOpd != null ? usedOpd.floatValue() : 0.0f;
+        System.out.println("usedOpd "+usedOpdValue);
+        
+        Float usedIpd = expensesRepository.getUseIpdByYear(uid, year);
+        float usedIpdValue = usedIpd != null ? usedIpd.floatValue() : 0.0f;
+        System.out.println("usedIpd "+ usedOpdValue);
+
+        float opdRemain = opdMaxLimit - usedOpdValue;
+        System.out.println("opdRemain "+ opdRemain);
+
+        float ipdRemain = ipdMaxLimit - usedIpdValue;
+        System.out.println("ipdRemain "+ ipdRemain);
 
         float roomService = budgetRepository.getPerDay(uid);
         Map<String, Double> responseData = new HashMap<>();
