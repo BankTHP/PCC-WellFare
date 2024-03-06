@@ -107,7 +107,7 @@ public class EmployeeService {
 		Dept dept = deptOptional.orElseThrow(() -> new RuntimeException("Dept not found"));
 		Employee employee = employeeRepository.findById(userid)
 				.orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + userid));
-		if(employeeRepository.existsByEmpid(editEmployeeRequest.getEmpId())){
+		if(!employeeRepository.existsByEmpid(editEmployeeRequest.getEmpId())){
 			throw new EntityNotFoundException("EmpCode is dup");
 		}
 		else{
