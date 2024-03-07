@@ -62,6 +62,24 @@ public class ExpensesController {
 	// public List<Expenses> getByUserId(@PathVariable Long userId) {
 	// return expensesService.getExpensesByUserId(userId);
 	// }
+	
+	@GetMapping(value = "/expense/user/{id}")
+	public ResponseEntity<?> getExpenseByUid(@PathVariable Long id) {
+		ApiResponse response = new ApiResponse();
+		ResponseData data = new ResponseData();
+		try {
+			List<Expenses> expense = expensesService.getByUserId(id);
+			data.setResult(expense);
+			response.setResponseData(data);
+			response.setResponseMessage("succes");
+			return ResponseEntity.ok().body(response);
+		}
+		catch(Exception e) {
+			response.setResponseMessage(e.getMessage());
+			return ResponseEntity.internalServerError().body(response);
+
+		}
+	}
 
 	@PostMapping(value = "/create")
 	public ResponseEntity<ApiResponse> createExpenses(@RequestBody ExpensesRequest expensesRequest,
@@ -234,8 +252,8 @@ public class ExpensesController {
 	}
 
 	@GetMapping("/searchExpenses/{userId}")
-	public Map<String, Object> findByEmpid(@PathVariable Long userId) {
-		Map<String, Object> expensesList = expensesService.getExpensesById(userId);
+	public Map<String, Object> findByEmpid(@PathVariable Long userId, @RequestParam(defaultValue = "0") Long year) {
+		Map<String, Object> expensesList = expensesService.getExpensesById(userId, year);
 		return expensesList;
 	}
 

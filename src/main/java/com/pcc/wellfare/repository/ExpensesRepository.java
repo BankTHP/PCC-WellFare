@@ -54,7 +54,13 @@ public interface ExpensesRepository extends JpaRepository<Expenses, Long> {
     List<Expenses> findByDateOfAdmissionIsNotNull();
 
     List<Expenses> findByEmployeeUserId(Long userId);
-
+    
+    @Query(value = "SELECT * "
+    		+ "FROM Expenses "
+    		+ "WHERE EXTRACT(YEAR FROM date_of_admission) = :year "
+    		+ "AND user_id = CAST(:uid AS bigint) "
+    		+ "ORDER BY date_of_admission ASC " , nativeQuery = true)
+    List<Expenses> findByEmpidAndYear(Long uid, Long year);
 
     Page<Expenses> findAllByEmployeeUserId(Long userId, Pageable pageable);
     

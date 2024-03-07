@@ -373,46 +373,53 @@ public class ExpensesService {
         return expensesRepository.findByEmployeeUserId(userId);
     }
 
-    public Map<String, Object> getExpensesById(Long userId) {
-        String jpql = "SELECT e.user_id, e.\"e-mail\", e.empid, e.remark, e.status, e.tname, e.tposition, " +
-                "e.tprefix, e.tsurname, e.budget_id, e.dept_code, e2.id, e2.can_withdraw, e2.date_of_admission, e2.days, "
-                +
-                "e2.description, e2.end_date, e2.ipd, e2.opd, e2.remark, e2.room_service, e2.start_date " +
-                "FROM employee e JOIN expenses e2 ON e2.user_id = e.user_id WHERE e.user_id = :id";
+    public Map<String, Object> getExpensesById(Long userId,Long year) {
+//        String jpql = "SELECT e.user_id, e.\"e-mail\", e.empid, e.remark, e.status, e.tname, e.tposition, " +
+//                "e.tprefix, e.tsurname, e.budget_id, e.dept_code, e2.id, e2.can_withdraw, e2.date_of_admission, e2.days, "
+//                +
+//                "e2.description, e2.end_date, e2.ipd, e2.opd, e2.remark, e2.room_service, e2.start_date " +
+//                "FROM employee e JOIN expenses e2 ON e2.user_id = e.user_id WHERE e.user_id = :id";
+//
+//        List<Object[]> results = entityManager
+//                .createNativeQuery(jpql)
+//                .setParameter("id", userId)
+//                .getResultList();
+    	List<Expenses> expense = new ArrayList<Expenses>();
+    	if(year != 0) {
+    		expense = expensesRepository.findByEmpidAndYear(userId, year);
+    	}else {
+    		expense = expensesRepository.findByEmployeeUserId(userId);
+    	}
 
-        List<Object[]> results = entityManager
-                .createNativeQuery(jpql)
-                .setParameter("id", userId)
-                .getResultList();
 
         Map<String, Object> userMap = new LinkedHashMap<>();
         List<Map<String, Object>> expensesList = new ArrayList<>();
 
-        for (Object[] row : results) {
-            userMap.put("userId", row[0]);
-            userMap.put("email", row[1]);
-            userMap.put("empid", row[2]);
-            userMap.put("remark", row[3]);
-            userMap.put("status", row[4]);
-            userMap.put("tname", row[5]);
-            userMap.put("tposition", row[6]);
-            userMap.put("tprefix", row[7]);
-            userMap.put("tsurname", row[8]);
-            userMap.put("budget_id", row[9]);
-            userMap.put("dept_code", row[10]);
+        for (Expenses row : expense) {
+            userMap.put("userId", row.getEmployee().getUserId());
+            userMap.put("email", row.getEmployee().getEmail());
+            userMap.put("empid", row.getEmployee().getEmpid());
+            userMap.put("remark", row.getEmployee().getRemark());
+            userMap.put("status", row.getEmployee().getStatus());
+            userMap.put("tname", row.getEmployee().getTname());
+            userMap.put("tposition", row.getEmployee().getTposition());
+            userMap.put("tprefix", row.getEmployee().getTprefix());
+            userMap.put("tsurname", row.getEmployee().getTsurname());
+            userMap.put("budget_id", row.getEmployee().getBudget().getId());
+            userMap.put("dept_code", row.getEmployee().getDept().getCode());
 
             Map<String, Object> expenseMap = new LinkedHashMap<>();
-            expenseMap.put("id", row[11]);
-            expenseMap.put("can_withdraw", row[12]);
-            expenseMap.put("date_of_admission", row[13]);
-            expenseMap.put("days", row[14]);
-            expenseMap.put("description", row[15]);
-            expenseMap.put("end_date", row[16]);
-            expenseMap.put("ipd", row[17]);
-            expenseMap.put("opd", row[18]);
-            expenseMap.put("remark", row[19]);
-            expenseMap.put("room_service", row[20]);
-            expenseMap.put("start_date", row[21]);
+            expenseMap.put("id", row.getId());
+            expenseMap.put("can_withdraw", row.getCanWithdraw());
+            expenseMap.put("date_of_admission", row.getDateOfAdmission());
+            expenseMap.put("days", row.getDays());
+            expenseMap.put("description", row.getDescription());
+            expenseMap.put("end_date", row.getEndDate());
+            expenseMap.put("ipd", row.getIpd());
+            expenseMap.put("opd", row.getOpd());
+            expenseMap.put("remark", row.getRemark());
+            expenseMap.put("room_service", row.getRoomService());
+            expenseMap.put("start_date", row.getStartDate());
 
             expensesList.add(expenseMap);
         }
