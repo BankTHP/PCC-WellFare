@@ -69,7 +69,7 @@ public class DatabaseInitialzer implements CommandLineRunner {
 
     public void insertDataIntoEmployeeTable() throws FileNotFoundException {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8080/employee/uploadEmps";
+        String url = "http://localhost:8081/employee/uploadEmps";
         if (isTableEmpty("public.employee")) {
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
             File file = new File("src/main/resources/fileExcel/Employee_1.csv");
@@ -89,7 +89,7 @@ public class DatabaseInitialzer implements CommandLineRunner {
     }
     private void insertDataIntoBudgetTable() {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8080/budget/uploadBudgets";
+        String url = "http://localhost:8081/budget/uploadBudgets";
         if (isTableEmpty("public.budget")) {
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
             File file = new File("src/main/resources/fileExcel/Budget_1.csv");
@@ -110,7 +110,7 @@ public class DatabaseInitialzer implements CommandLineRunner {
 
     private void insertDataIntodeptTable() {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8080/dept/uploadDepts";
+        String url = "http://localhost:8081/dept/uploadDepts";
         if (isTableEmpty("public.dept")) {
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
             File file = new File("src/main/resources/fileExcel/Dept_1.csv");
