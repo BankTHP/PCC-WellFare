@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.pcc.wellfare.model.User;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -56,10 +58,17 @@ public class JwtService {
 	          UserDetails userDetails,
 	          long expiration
 	  ) {
+		User user = (User) userDetails;
+		
+		Map<String, Object> claims = new HashMap<>();
+        claims.put("firstname", user.getFirstname());
+        claims.put("lastname", user.getLastname());
+        claims.put("role", user.getRole().name());
 	    return Jwts
 	            .builder()
 	            .setClaims(extraClaims)
 	            .setSubject(userDetails.getUsername())
+	            .addClaims(claims)
 	            .setIssuedAt(new Date(System.currentTimeMillis()))
 	            .setExpiration(new Date(System.currentTimeMillis() + expiration))
 	            .signWith(getSignInKey(), SignatureAlgorithm.HS256)
