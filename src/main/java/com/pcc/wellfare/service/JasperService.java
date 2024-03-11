@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.io.FileUtils;
+//import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -25,7 +25,7 @@ import com.pcc.wellfare.repository.ExpensesRepository;
 import com.pcc.wellfare.requests.ExpenseHistoryRequest;
 
 import lombok.AllArgsConstructor;
-import lombok.var;
+//import lombok.var;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -48,58 +48,58 @@ public class JasperService {
 	@Autowired
 	private ResourceLoader resourceLoader;
 
-	public byte[] printExpenseHistoryReport(Integer month, Integer year, String type,String reportType) throws JRException, IOException {
-		Resource resource = resourceLoader.getResource("classpath:report/ExpenseHistory.jrxml");
-	    InputStream expenseHistoryReportStream = resource.getInputStream();
-
-	    List<Expenses> expenseList = new ArrayList<>();
-	    String thaiMonth = "";
-	    String buddhistYear = String.valueOf(year + 543);
-	    Map<String, Object> params = new HashMap<String, Object>();
-	    String typeName = thaiHealthType(type);
-
-
-	    if (reportType.equals("byYear")) {
-	        expenseList = getExpenseByYear(type, year);
-	        thaiMonth = (year.equals(LocalDate.now().getYear())) ? getThaiMonth(1) + " - " + getThaiMonth(LocalDate.now().getMonth().getValue())
-	        :getThaiMonth(1) + " - " + getThaiMonth(12) ;
-	        
-	    } else {
-	        expenseList = getExpenseByMonth(type, month, year);
-	        thaiMonth = getThaiMonth(month);
-	    }
-
-	    List<ExpenseHistoryRequest> expenseHistoryList = new ArrayList<>();
-	    for (Expenses expense : expenseList) {
-	        ExpenseHistoryRequest expenseHistoryModel = ExpenseHistoryRequest
-	                .builder()
-	                .dateCount(expense.getDays())
-	                .dateOfAdmidtion(BuddhistDateInThaiFomat(expense.getDateOfAdmission()))
-	                .description(expense.getDescription())
-	                .endDate(BuddhistDateInThaiFomat(expense.getEndDate()))
-	                .firstname(expense.getEmployee().getTname())
-	                .remark(expense.getRemark())
-	                .startDate(BuddhistDateInThaiFomat(expense.getStartDate()))
-	                .surname(expense.getEmployee().getTsurname())
-	                .withdraw((double) expense.getCanWithdraw())
-	                .prefix(expense.getEmployee().getTprefix())
-	                .build();
-	        expenseHistoryList.add(expenseHistoryModel);
-	    }
-	    
-	    params.put("expenseMonth", thaiMonth);
-	    params.put("expenseYear", buddhistYear);
-	    params.put("expenseType", typeName);
-		
-		JasperReport jasperReport = JasperCompileManager.compileReport(expenseHistoryReportStream);
-		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(expenseHistoryList);
-		
-		params.put("ExpenseHistoryDataSet", dataSource);
-	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
-	    JasperExportManager.exportReportToPdfFile(jasperPrint, "Report.pdf");
-	    File filePdf = new File("Report.pdf");
-	    return FileUtils.readFileToByteArray(filePdf);
-	}
+//	public byte[] printExpenseHistoryReport(Integer month, Integer year, String type,String reportType) throws JRException, IOException {
+//		Resource resource = resourceLoader.getResource("classpath:report/ExpenseHistory.jrxml");
+//	    InputStream expenseHistoryReportStream = resource.getInputStream();
+//
+//	    List<Expenses> expenseList = new ArrayList<>();
+//	    String thaiMonth = "";
+//	    String buddhistYear = String.valueOf(year + 543);
+//	    Map<String, Object> params = new HashMap<String, Object>();
+//	    String typeName = thaiHealthType(type);
+//
+//
+//	    if (reportType.equals("byYear")) {
+//	        expenseList = getExpenseByYear(type, year);
+//	        thaiMonth = (year.equals(LocalDate.now().getYear())) ? getThaiMonth(1) + " - " + getThaiMonth(LocalDate.now().getMonth().getValue())
+//	        :getThaiMonth(1) + " - " + getThaiMonth(12) ;
+//	        
+//	    } else {
+//	        expenseList = getExpenseByMonth(type, month, year);
+//	        thaiMonth = getThaiMonth(month);
+//	    }
+//
+//	    List<ExpenseHistoryRequest> expenseHistoryList = new ArrayList<>();
+//	    for (Expenses expense : expenseList) {
+//	        ExpenseHistoryRequest expenseHistoryModel = ExpenseHistoryRequest
+//	                .builder()
+//	                .dateCount(expense.getDays())
+//	                .dateOfAdmidtion(BuddhistDateInThaiFomat(expense.getDateOfAdmission()))
+//	                .description(expense.getDescription())
+//	                .endDate(BuddhistDateInThaiFomat(expense.getEndDate()))
+//	                .firstname(expense.getEmployee().getTname())
+//	                .remark(expense.getRemark())
+//	                .startDate(BuddhistDateInThaiFomat(expense.getStartDate()))
+//	                .surname(expense.getEmployee().getTsurname())
+//	                .withdraw((double) expense.getCanWithdraw())
+//	                .prefix(expense.getEmployee().getTprefix())
+//	                .build();
+//	        expenseHistoryList.add(expenseHistoryModel);
+//	    }
+//	    
+//	    params.put("expenseMonth", thaiMonth);
+//	    params.put("expenseYear", buddhistYear);
+//	    params.put("expenseType", typeName);
+//		
+//		JasperReport jasperReport = JasperCompileManager.compileReport(expenseHistoryReportStream);
+//		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(expenseHistoryList);
+//		
+//		params.put("ExpenseHistoryDataSet", dataSource);
+//	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
+//	    JasperExportManager.exportReportToPdfFile(jasperPrint, "Report.pdf");
+//	    File filePdf = new File("Report.pdf");
+//	    return FileUtils.readFileToByteArray(filePdf);
+//	}
 	
 	public String printExpenseHistoryReportBase64(Integer month, Integer year, String type, String reportType) throws JRException, IOException {
 	    Resource resource = resourceLoader.getResource("classpath:report/ExpenseHistory.jrxml");
