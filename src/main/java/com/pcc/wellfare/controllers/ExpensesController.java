@@ -87,7 +87,7 @@ public class ExpensesController {
 		ApiResponse response = new ApiResponse();
 		ResponseData data = new ResponseData();
 		try {
-			Object expenses = expensesService.create(expensesRequest, userId);
+			Object expenses = expensesService.withDraw(expensesRequest, userId);
 			data.setResult(expenses);
 			response.setResponseMessage("กรอกข้อมูลเรียบร้อย");
 			response.setResponseData(data);

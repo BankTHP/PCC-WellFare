@@ -562,13 +562,13 @@ public class ExpensesService {
         // Sum all cost request
         float healthCost = healthCostRequest + roomServiceCanUse;
         float canWithdraw = 0.0f;
-        if (healthCostLimit <= 0) {
-            return "คงเบิกได้ 0 บาท";
-        }
+
         if (healthCostLimit >= healthCost) {
             canWithdraw = healthCost;
-        } else {
+        } else if(healthCostLimit <= healthCost){
             canWithdraw = healthCostLimit;
+        } else {
+        	canWithdraw = 0.0f;
         }
 
         Expenses expense = Expenses.builder()
