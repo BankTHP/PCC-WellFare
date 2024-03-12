@@ -24,26 +24,26 @@ public class ReportController {
 
 	private final JasperService jasperService;
 	
-//	@GetMapping("/expenseHistoryReport")
-//    public ResponseEntity<byte[]> printExpenseHistoryReport(
-//            @RequestParam(required = false , defaultValue = "0") Integer month,
-//            @RequestParam Integer year,
-//            @RequestParam String type,
-//            @RequestParam String reportType) {
-//        try {
-//            byte[] report = jasperService.printExpenseHistoryReport(month, year, type, reportType);
-//            Integer buddhistYear = year + 543;
-//            String filename = URLEncoder.encode("รายงานการเบิกค่ารักษาพยาบาลประจำเดือน" + jasperService.getThaiMonth(month) + buddhistYear + ".pdf", "UTF-8");
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_PDF);
-//            headers.setContentDispositionFormData("filename", filename);
-//            headers.setContentLength(report.length);
-//            return new ResponseEntity<>(report, headers, HttpStatus.OK);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+	@GetMapping("/expenseHistoryReport")
+    public ResponseEntity<byte[]> printExpenseHistoryReport(
+            @RequestParam(required = false , defaultValue = "0") Integer month,
+            @RequestParam Integer year,
+            @RequestParam String type,
+            @RequestParam String reportType) {
+        try {
+            byte[] report = jasperService.printExpenseHistoryReport(month, year, type, reportType);
+            Integer buddhistYear = year + 543;
+            String filename = URLEncoder.encode("รายงานการเบิกค่ารักษาพยาบาลประจำเดือน" + jasperService.getThaiMonth(month) + buddhistYear + ".pdf", "UTF-8");
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("filename", filename);
+            headers.setContentLength(report.length);
+            return new ResponseEntity<>(report, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     
     @GetMapping("/expenseHistoryReportBase64")
     public ResponseEntity<ApiResponse> printExpenseHistoryReportBase64(
